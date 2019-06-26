@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -110,6 +111,34 @@ namespace Util
                 return string.Join(sep2, nums.Select(x => string.Join(sep1, x)));
             }
             return string.Format("{0} ...", string.Join(sep2, nums.Take(10).Select(x => string.Join(sep1, x))));
+        }
+        public static string[] InputFromFile(this string fn)
+        {
+            string input;
+            using (var fs = File.OpenText(Path.Join(Directory.GetCurrentDirectory(), fn)))
+            {
+                input = fs.ReadToEnd();
+            }
+            return input.CleanInput();
+        }
+        public static string[] CleanInput(this string input)
+        {
+            return input.Trim(new char[] { '\n', '\r', ' ' })
+                        .Split('\n')
+                        .Select(x => x.Trim(new char[] { '\r', ' ' }))
+                        .Where(y => !y.StartsWith('#'))
+                        .ToArray();
+        }
+        public static string[] JsonToStr1d(this string s)
+        {
+            return s.TrimStart('[').TrimEnd(']')
+                    .Split(',')
+                    .Select(x => x.Trim().Trim('"'))
+                    .ToArray();
+        }
+        public static string Str1dToJson(this int[] a)
+        {
+            return string.Format("[{0}]", string.Join(',', a.Select(i => $"\"{i}\"")));
         }
         public static int[] JsonToInt1d(this string s)
         {

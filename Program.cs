@@ -75,7 +75,9 @@ namespace LeetCode
             // UniquePathsII.Test.Run();
             // MinimumPathSum.Test.Run();
             // ValidNumber.Test.Run();
-            PlusOne.Test.Run();
+            // PlusOne.Test.Run();
+            // AddBinary.Test.Run();
+            TextJustification.Test.Run();
         }
     }
 
