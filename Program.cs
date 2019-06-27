@@ -77,7 +77,10 @@ namespace LeetCode
             // ValidNumber.Test.Run();
             // PlusOne.Test.Run();
             // AddBinary.Test.Run();
-            TextJustification.Test.Run();
+            // TextJustification.Test.Run();
+            // Sqrt.Test.Run();
+            // ClimbingStairs.Test.Run();
+            SimplifyPath.Test.Run();
         }
     }
 

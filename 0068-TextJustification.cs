@@ -19,6 +19,7 @@ namespace TextJustification
             {
                 if (lastLine)
                 {
+                    // the last line must be left-justified instead of fully-justified
                     var s = string.Join(" ", lst);
                     return s.PadRight(maxWidth);
                 }
@@ -28,6 +29,8 @@ namespace TextJustification
                 }
                 var total = maxWidth - lst.Sum(i => i.Length);
                 var spacesGroup = lst.Count - 1;
+                // eg: 11 spaces split to 3 groups: 4, 4, 3:
+                // 11/3=3, 11%3=2. add these 2 extra spaces to the first 2 groups
                 var tailSpaceLen = (int)(total / spacesGroup);
                 var spaces = "".PadRight(tailSpaceLen);
                 var extra = total % spacesGroup;
