@@ -81,7 +81,10 @@ namespace LeetCode
             // Sqrt.Test.Run();
             // ClimbingStairs.Test.Run();
             // SimplifyPath.Test.Run();
-            EditDistance.Test.Run();
+            // EditDistance.Test.Run();
+            // SetMatrixZeroes.Test.Run();
+            // SearchA2DMatrix.Test.Run();
+            SortColors.Test.Run();
         }
     }
 
