@@ -80,7 +80,8 @@ namespace LeetCode
             // TextJustification.Test.Run();
             // Sqrt.Test.Run();
             // ClimbingStairs.Test.Run();
-            SimplifyPath.Test.Run();
+            // SimplifyPath.Test.Run();
+            EditDistance.Test.Run();
         }
     }
 
