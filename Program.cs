@@ -84,7 +84,8 @@ namespace LeetCode
             // EditDistance.Test.Run();
             // SetMatrixZeroes.Test.Run();
             // SearchA2DMatrix.Test.Run();
-            SortColors.Test.Run();
+            // SortColors.Test.Run();
+            MinimumWindowSubstring.Test.Run();
         }
     }
 
