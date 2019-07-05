@@ -158,6 +158,7 @@ namespace Util
                     .Select(x =>
                                 x.TrimStart(new char[] { '[', ' ' }).TrimEnd(new char[] { ']', ' ' })
                                 .Split(',')
+                                .Where(z => z.Length > 0)
                                 .Select(y => int.Parse(y))
                                 .ToArray())
                     .ToArray();

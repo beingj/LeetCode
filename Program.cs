@@ -85,7 +85,9 @@ namespace LeetCode
             // SetMatrixZeroes.Test.Run();
             // SearchA2DMatrix.Test.Run();
             // SortColors.Test.Run();
-            MinimumWindowSubstring.Test.Run();
+            // MinimumWindowSubstring.Test.Run();
+            // Combinations.Test.Run();
+            Subsets.Test.Run();
         }
     }
 
