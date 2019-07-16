@@ -168,6 +168,36 @@ namespace Util
             return string.Format("[{0}]", string.Join(",", a.Select(x =>
                         string.Format("[{0}]", string.Join(',', x)))));
         }
+        public static char[][] JsonToChar2d(this string s)
+        {
+            return s.TrimStart(new char[] { '[', ' ' }).TrimEnd(new char[] { ']', ' ' })
+                    .Split("],")
+                    .Select(x =>
+                                x.TrimStart(new char[] { '[', ' ' }).TrimEnd(new char[] { ']', ' ' })
+                                .Trim('\'')
+                                .Split(',')
+                                .Where(z => z.Length > 0)
+                                .Select(y => char.Parse(y.Trim('\'')))
+                                .ToArray())
+                    .ToArray();
+        }
+        public static string Char2dToJson(this char[][] a)
+        {
+            return string.Format("[{0}]", string.Join(",", a.Select(x =>
+                        string.Format("['{0}']", string.Join("\',\'", x)))));
+        }
+        public static ListNode JsonToListNode(this string s)
+        {
+            var q = s.TrimStart(new char[] { '[', ' ' }).TrimEnd(new char[] { ']', ' ' })
+                    .Split(",")
+                    .Select(x => x.Trim());
+            return ListNode.FromList(string.Join("->", q));
+        }
+        public static string ListNodeToJson(this ListNode ln)
+        {
+            var s = string.Join(',', ln.ToString().Split("->"));
+            return string.Format("[{0}]", s);
+        }
     }
     public class Timeit : IDisposable
     {

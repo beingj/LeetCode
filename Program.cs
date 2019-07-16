@@ -87,7 +87,12 @@ namespace LeetCode
             // SortColors.Test.Run();
             // MinimumWindowSubstring.Test.Run();
             // Combinations.Test.Run();
-            Subsets.Test.Run();
+            // Subsets.Test.Run();
+            // WordSearch.Test.Run();
+            // RemoveDuplicatesFromSortedArrayII.Test.Run();
+            // SearchInRotatedSortedArrayII.Test.Run();
+            RemoveDuplicatesFromSortedListII.Test.Run();
+            // RemoveDuplicatesFromSortedList.Test.Run();
         }
     }
 
