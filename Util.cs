@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Xunit;
 
 namespace Util
 {
@@ -129,6 +130,22 @@ namespace Util
                         .Where(y => !y.StartsWith('#'))
                         .ToArray();
         }
+        public static IEnumerable<List<dynamic>> ParseType(this string[] lines, List<(Type type, Func<string, object> converter)> parser)
+        {
+            int idx = 0;
+            while (idx < lines.Length)
+            {
+                var tvs = new List<dynamic>();
+                foreach (var p in parser)
+                {
+                    var t = p.type;
+                    var v = p.converter(lines[idx++]);
+                    dynamic tv = Convert.ChangeType(v, t);
+                    tvs.Add(tv);
+                }
+                yield return tvs;
+            }
+        }
         public static string[] JsonToStr1d(this string s)
         {
             return s.TrimStart('[').TrimEnd(']')
@@ -216,6 +233,30 @@ namespace Util
             string ExecutionTimeTaken = string.Format("{0}s {1}ms", sw.Elapsed.Seconds, sw.Elapsed.TotalMilliseconds);
             Console.WriteLine(ExecutionTimeTaken);
             //    sw.Restart();
+        }
+    }
+    public class Verify
+    {
+        public static void Function(string inputToString, Func<dynamic> func, dynamic exp)
+        {
+            Console.WriteLine(inputToString);
+            dynamic res;
+            using (new Timeit())
+            {
+                res = func();
+            }
+            Assert.Equal(exp, res);
+        }
+        public static void Input(string[] lines,
+                                List<(Type type, Func<string, object> converter)> inputParser,
+                                Func<List<dynamic>, string> inputFormatter,
+                                Func<List<dynamic>, Func<dynamic>> funcConverter
+                                )
+        {
+            foreach (var paras in lines.ParseType(inputParser))
+            {
+                Verify.Function(inputFormatter(paras), funcConverter(paras), paras.Last());
+            }
         }
     }
     public class Permutation

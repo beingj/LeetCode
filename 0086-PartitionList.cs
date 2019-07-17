@@ -61,18 +61,25 @@ namespace PartitionList
     }
     public class Test
     {
-        static void Verify(ListNode head, int x, ListNode exp)
-        {
-            Console.WriteLine($"{head} | {x}");
-            ListNode res;
-            using (new Timeit())
-            {
-                res = new Solution().Partition(head, x);
-            }
-            Assert.Equal(exp, res);
-        }
         static public void Run()
         {
+            Func<List<dynamic>, string> inputFormatter = (paras) => $"{paras[0]} | {paras[1]}";
+            // Func<List<dynamic>, Func<dynamic>> funcConverter = (paras) =>
+            //  {
+            //      Func<dynamic> f = () => new Solution().Partition(paras[0], paras[1]);
+            //      return f;
+            //  };
+            Func<List<dynamic>, Func<dynamic>> funcConverter = (paras) =>
+                () => new Solution().Partition(paras[0], paras[1]);
+
+            // https://stackoverflow.com/questions/8002455/how-to-easily-initialize-a-list-of-tuples
+            var inputParser = new List<(Type type, Func<string, object> converter)>
+            {
+                (typeof(ListNode),x=>x.JsonToListNode()),
+                (typeof(int),x=>int.Parse(x)),
+                (typeof(ListNode),x=>x.JsonToListNode()),
+            };
+
             Console.WriteLine(typeof(Solution).Namespace);
 
             var input = @"
@@ -87,17 +94,14 @@ namespace PartitionList
 [1,1]
 ";
             var lines = input.CleanInput();
-            ListNode head;
-            int x;
-            ListNode exp;
-            int idx = 0;
-            while (idx < lines.Length)
+            foreach (var paras in lines.ParseType(inputParser))
             {
-                head = lines[idx++].JsonToListNode();
-                x = int.Parse(lines[idx++]);
-                exp = lines[idx++].JsonToListNode();
-                Verify(head, x, exp);
+                // var s = $"{paras[0]} | {paras[1]}";
+                // Func<dynamic> f = () => new Solution().Partition(paras[0], paras[1]);
+                // Verify.Function(s, f, paras[2]);
+                Verify.Function(inputFormatter(paras), funcConverter(paras), paras.Last());
             }
+            Verify.Input(lines, inputParser, inputFormatter, funcConverter);
         }
     }
 }
