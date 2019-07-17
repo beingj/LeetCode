@@ -94,7 +94,8 @@ namespace LeetCode
             // RemoveDuplicatesFromSortedListII.Test.Run();
             // RemoveDuplicatesFromSortedList.Test.Run();
             // LargestRectangleInHistogram.Test.Run();
-            MaximalRectangle.Test.Run();
+            // MaximalRectangle.Test.Run();
+            PartitionList.Test.Run();
         }
     }
 
