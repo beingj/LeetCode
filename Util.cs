@@ -130,7 +130,7 @@ namespace Util
                         .Where(y => !y.StartsWith('#'))
                         .ToArray();
         }
-        public static IEnumerable<List<dynamic>> ParseType(this string[] lines, List<(Type type, Func<string, object> converter)> parser)
+        public static IEnumerable<List<dynamic>> ParseType(this string[] lines, InputConverterList parser)
         {
             int idx = 0;
             while (idx < lines.Length)
@@ -235,6 +235,27 @@ namespace Util
             //    sw.Restart();
         }
     }
+    public class InputConverter
+    {
+        public Type type;
+        public Func<string, object> converter;
+        public InputConverter() { }
+        public InputConverter(Type t, Func<string, object> f)
+        {
+            type = t;
+            converter = f;
+        }
+    }
+    public class InputConverterList : List<InputConverter>
+    {
+        // https://stackoverflow.com/questions/9194363/using-collection-initializer-syntax-on-custom-types
+        public void Add(Type t, Func<string, object> f)
+        {
+            // InputConverter item = new InputConverter(t, f);
+            InputConverter item = new InputConverter { type = t, converter = f };
+            Add(item);
+        }
+    }
     public class Verify
     {
         public static void Function(string inputToString, Func<dynamic> func, dynamic exp)
@@ -248,7 +269,7 @@ namespace Util
             Assert.Equal(exp, res);
         }
         public static void Input(string[] lines,
-                                List<(Type type, Func<string, object> converter)> inputParser,
+                                InputConverterList inputParser,
                                 Func<List<dynamic>, string> inputFormatter,
                                 Func<List<dynamic>, Func<dynamic>> funcConverter
                                 )

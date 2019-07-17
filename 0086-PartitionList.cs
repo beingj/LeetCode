@@ -72,12 +72,10 @@ namespace PartitionList
             Func<List<dynamic>, Func<dynamic>> funcConverter = (paras) =>
                 () => new Solution().Partition(paras[0], paras[1]);
 
-            // https://stackoverflow.com/questions/8002455/how-to-easily-initialize-a-list-of-tuples
-            var inputParser = new List<(Type type, Func<string, object> converter)>
-            {
-                (typeof(ListNode),x=>x.JsonToListNode()),
-                (typeof(int),x=>int.Parse(x)),
-                (typeof(ListNode),x=>x.JsonToListNode()),
+            var inputParser = new InputConverterList{
+                {typeof(ListNode), x=>x.JsonToListNode()},
+                {typeof(int),x=>int.Parse(x)},
+                {typeof(ListNode),x=>x.JsonToListNode()},
             };
 
             Console.WriteLine(typeof(Solution).Namespace);
