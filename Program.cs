@@ -93,7 +93,8 @@ namespace LeetCode
             // SearchInRotatedSortedArrayII.Test.Run();
             // RemoveDuplicatesFromSortedListII.Test.Run();
             // RemoveDuplicatesFromSortedList.Test.Run();
-            LargestRectangleInHistogram.Test.Run();
+            // LargestRectangleInHistogram.Test.Run();
+            MaximalRectangle.Test.Run();
         }
     }
 

@@ -168,23 +168,22 @@ namespace Util
             return string.Format("[{0}]", string.Join(",", a.Select(x =>
                         string.Format("[{0}]", string.Join(',', x)))));
         }
-        public static char[][] JsonToChar2d(this string s)
+        public static char[][] JsonToChar2d(this string s, char quote = '\'')
         {
             return s.TrimStart(new char[] { '[', ' ' }).TrimEnd(new char[] { ']', ' ' })
                     .Split("],")
                     .Select(x =>
                                 x.TrimStart(new char[] { '[', ' ' }).TrimEnd(new char[] { ']', ' ' })
-                                .Trim('\'')
                                 .Split(',')
                                 .Where(z => z.Length > 0)
-                                .Select(y => char.Parse(y.Trim('\'')))
+                                .Select(y => char.Parse(y.Trim(quote)))
                                 .ToArray())
                     .ToArray();
         }
-        public static string Char2dToJson(this char[][] a)
+        public static string Char2dToJson(this char[][] a, char quote = '\'')
         {
             return string.Format("[{0}]", string.Join(",", a.Select(x =>
-                        string.Format("['{0}']", string.Join("\',\'", x)))));
+                        string.Format("[{1}{0}{1}]", string.Join(string.Format("{0},{0}", quote), x), quote))));
         }
         public static ListNode JsonToListNode(this string s)
         {
