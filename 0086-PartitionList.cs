@@ -63,23 +63,6 @@ namespace PartitionList
     {
         static public void Run()
         {
-            Func<List<dynamic>, string> inputFormatter = (paras) => $"{paras[0]} | {paras[1]}";
-            // Func<List<dynamic>, Func<dynamic>> funcConverter = (paras) =>
-            //  {
-            //      Func<dynamic> f = () => new Solution().Partition(paras[0], paras[1]);
-            //      return f;
-            //  };
-            Func<List<dynamic>, Func<dynamic>> funcConverter = (paras) =>
-                () => new Solution().Partition(paras[0], paras[1]);
-
-            var inputParser = new InputConverterList{
-                {typeof(ListNode), x=>x.JsonToListNode()},
-                {typeof(int),x=>int.Parse(x)},
-                {typeof(ListNode),x=>x.JsonToListNode()},
-            };
-
-            Console.WriteLine(typeof(Solution).Namespace);
-
             var input = @"
 [1,4,3,2,5,2]
 3
@@ -92,14 +75,7 @@ namespace PartitionList
 [1,1]
 ";
             var lines = input.CleanInput();
-            foreach (var paras in lines.ParseType(inputParser))
-            {
-                // var s = $"{paras[0]} | {paras[1]}";
-                // Func<dynamic> f = () => new Solution().Partition(paras[0], paras[1]);
-                // Verify.Function(s, f, paras[2]);
-                Verify.Function(inputFormatter(paras), funcConverter(paras), paras.Last());
-            }
-            Verify.Input(lines, inputParser, inputFormatter, funcConverter);
+            Verify.Method(new Solution(), lines);
         }
     }
 }

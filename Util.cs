@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using Xunit;
 
@@ -240,14 +241,38 @@ namespace Util
         public Type type;
         public Func<string, object> converter;
         public InputConverter() { }
+        public InputConverter(Type t)
+        {
+            type = t;
+            converter = ToType(t);
+        }
         public InputConverter(Type t, Func<string, object> f)
         {
             type = t;
             converter = f;
         }
+        public Func<string, dynamic> ToType(Type t)
+        {
+            Func<string, dynamic> f = (x) => x;
+            // TODO: fill all converters
+            if (t == typeof(int))
+            {
+                f = x => int.Parse(x);
+            }
+            else if (t == typeof(ListNode))
+            {
+                f = x => x.JsonToListNode();
+            }
+            return f;
+        }
     }
     public class InputConverterList : List<InputConverter>
     {
+        public InputConverterList(List<Type> ts)
+        {
+            ts.ForEach(t => Add(t));
+        }
+
         // https://stackoverflow.com/questions/9194363/using-collection-initializer-syntax-on-custom-types
         public void Add(Type t, Func<string, object> f)
         {
@@ -255,9 +280,86 @@ namespace Util
             InputConverter item = new InputConverter { type = t, converter = f };
             Add(item);
         }
+        public void Add(Type t)
+        {
+            InputConverter item = new InputConverter(t);
+            Add(item);
+        }
+    }
+    public class Method
+    {
+        public static MethodInfo[] GetMethodsFromType(Type t, BindingFlags flag = BindingFlags.Public | BindingFlags.Instance, bool userDefined = true)
+        {
+            if (userDefined)
+            {
+                var defaultMethods = new List<string>{
+                    "ToString", "Equals", "GetHashCode", "GetType"
+                };
+                return t.GetMethods(flag).Where(i => !defaultMethods.Contains(i.Name)).ToArray();
+            }
+            return t.GetMethods(flag);
+        }
+        public static MethodInfo GetInfo(string t, string m)
+        {
+            // var m = Method.GetInfo("PartitionList.Solution", "Partition");
+            var typ = Type.GetType(t);
+            return typ.GetMethod(m);
+        }
+        public static List<Type> GetParametersAndReturnTypes(MethodInfo m)
+        {
+            var tlist = new List<Type>();
+            tlist.AddRange(m.GetParameters().Select(i => i.ParameterType));
+            tlist.Add(m.ReturnType);
+            return tlist;
+        }
+        public static List<Type> GetReturnAndParametersTypes(MethodInfo m)
+        {
+            var tlist = new List<Type>();
+            tlist.Add(m.ReturnType);
+            tlist.AddRange(m.GetParameters().Select(i => i.ParameterType));
+            return tlist;
+        }
     }
     public class Verify
     {
+        public static void Method(dynamic obj, string[] lines)
+        {
+            MethodInfo method = Util.Method.GetMethodsFromType(obj.GetType())[0];
+            var inputTypes = Util.Method.GetParametersAndReturnTypes(method);
+            var signature = string.Format("{0}.{1}({2}) => {3}",
+                            obj.GetType().Namespace,
+                            method.Name,
+                            string.Join(", ", inputTypes.SkipLast(1)),
+                            inputTypes.Last());
+            Console.WriteLine(signature);
+
+            var inputParser = new InputConverterList(inputTypes);
+            var maxChars = 100;
+            var maxCharsEach = maxChars / inputTypes.Count;
+
+            int idx = 0;
+            while (idx < lines.Length)
+            {
+                var ss = new List<string>();
+                var vs = new List<dynamic>();
+                foreach (var p in inputParser)
+                {
+                    var s = lines[idx++];
+                    ss.Add(s.Substring(0, Math.Min(s.Length, maxCharsEach)));
+                    dynamic tv = Convert.ChangeType(p.converter(s), p.type);
+                    vs.Add(tv);
+                }
+                Console.WriteLine(string.Format("{0,-50} => {1}", string.Join(" | ", ss.SkipLast(1)), ss.Last()));
+                dynamic res;
+                using (new Timeit())
+                {
+                    res = method.Invoke(obj, vs.SkipLast(1).ToArray());
+                }
+                // TODO: how about return void?
+                dynamic exp = Convert.ChangeType(vs.Last(), inputTypes.Last());
+                Assert.Equal(exp, res);
+            }
+        }
         public static void Function(string inputToString, Func<dynamic> func, dynamic exp)
         {
             Console.WriteLine(inputToString);
