@@ -339,7 +339,6 @@ namespace Util
     {
         public static void Method(dynamic obj, string[] lines, int checkParaIndex = -1, bool truncate = false)
         {
-            dynamic para = null, paraExpS = null, paraExpV = null, paraExpT = null;
             MethodInfo method = Util.Method.GetMethodsFromType(obj.GetType())[0];
             var inputTypes = Util.Method.GetParametersAndReturnTypes(method);
             var signature = string.Format("{0}.{1}({2}) => {3}",
@@ -348,21 +347,32 @@ namespace Util
                             string.Join(", ", inputTypes.SkipLast(1)),
                             inputTypes.Last());
             Console.WriteLine(signature);
-            Type expType = inputTypes.Last();
+
+            Type retExpType = inputTypes.Last();
+            bool retVoid = false;
+            if (retExpType == typeof(void))
+            {
+                retVoid = true;
+                inputTypes.RemoveAt(inputTypes.Count - 1);
+            }
+
+            dynamic checkParaExpT = null;
             if (checkParaIndex >= 0)
             {
-                paraExpT = inputTypes[checkParaIndex];
-                inputTypes.Add(paraExpT);
-                Console.WriteLine($"And in-place change parameter {checkParaIndex}: {paraExpT}");
+                checkParaExpT = inputTypes[checkParaIndex];
+                inputTypes.Add(checkParaExpT);
+                Console.WriteLine($"And in-place change parameter {checkParaIndex}: {checkParaExpT}");
             }
 
             var inputParser = new InputConverterList(inputTypes);
             var maxChars = 100;
             var maxCharsEach = maxChars / inputTypes.Count;
 
+            dynamic checkPara = null, checkParaExpV = null;
             int idx = 0;
             while (idx < lines.Length)
             {
+                string allParaS = null, retExpS = null, checkParaExpS = null;
                 var ss = new List<string>();
                 var vs = new List<dynamic>();
                 foreach (var p in inputParser)
@@ -375,25 +385,49 @@ namespace Util
 
                 if (checkParaIndex >= 0)
                 {
-                    para = vs[checkParaIndex];
-                    paraExpS = ss.Last();
+                    checkPara = vs[checkParaIndex];
+                    checkParaExpS = ss.Last();
                     ss.RemoveAt(ss.Count - 1);
-                    paraExpV = vs.Last();
+                    checkParaExpV = vs.Last();
                     vs.RemoveAt(vs.Count - 1);
-                    Console.WriteLine(string.Format("{0,-50} => {1} | {2}", string.Join(" | ", ss.SkipLast(1)), ss.Last(), paraExpS));
+                }
+
+                if (retVoid)
+                {
+                    retExpS = "void";
+                    allParaS = string.Join(" | ", ss);
                 }
                 else
                 {
-                    Console.WriteLine(string.Format("{0,-50} => {1}", string.Join(" | ", ss.SkipLast(1)), ss.Last()));
+                    retExpS = ss.Last();
+                    allParaS = string.Join(" | ", ss.SkipLast(1));
                 }
-                dynamic res;
-                using (new Timeit())
+
+                if (checkParaExpS != null)
                 {
-                    res = method.Invoke(obj, vs.SkipLast(1).ToArray());
+                    Console.WriteLine(string.Format("{0,-50} => {1} | {2}", allParaS, retExpS, checkParaExpS));
                 }
-                // TODO: how about return void?
-                // Assert.Equal(exp, res);
-                Assert.Equal(vs.Last(), res);
+                else
+                {
+                    Console.WriteLine(string.Format("{0,-50} => {1}", allParaS, retExpS));
+                }
+
+                dynamic ret = null;
+                if (retVoid)
+                {
+                    using (new Timeit())
+                    {
+                        method.Invoke(obj, vs.ToArray());
+                    }
+                }
+                else
+                {
+                    using (new Timeit())
+                    {
+                        ret = method.Invoke(obj, vs.SkipLast(1).ToArray());
+                    }
+                    Assert.Equal(vs.Last(), ret);
+                }
 
                 if (checkParaIndex >= 0)
                 {
@@ -402,9 +436,9 @@ namespace Util
                         // https://github.com/dotnet/coreclr/issues/15186
                         // The dynamic binder does not—and should not—consider extension method syntax in deciding which overload to bind to.
                         // You should use the static method call syntax of TaskExtensions.TaskExtension(DoSomething(thing)); instead.
-                        para = Enumerable.Take(para, res);
+                        checkPara = Enumerable.Take(checkPara, ret);
                     }
-                    Assert.Equal(paraExpV, para);
+                    Assert.Equal(checkParaExpV, checkPara);
                 }
             }
         }

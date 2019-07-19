@@ -46,33 +46,14 @@ namespace SortColors
     }
     public class Test
     {
-        static void Verify(int[] nums, int[] exp)
-        {
-            Console.WriteLine($"{nums.Int1dToJson()} => {exp.Int1dToJson()}");
-            using (new Timeit())
-            {
-                new Solution().SortColors(nums);
-            }
-            Assert.Equal(exp, nums);
-        }
         static public void Run()
         {
-            Console.WriteLine(typeof(Solution).Namespace);
-
             var input = @"
 [2,0,2,1,1,0]
 [0,0,1,1,2,2]
 ";
             var lines = input.CleanInput();
-            int[] nums;
-            int[] exp;
-            int idx = 0;
-            while (idx < lines.Length)
-            {
-                nums = lines[idx++].JsonToInt1d();
-                exp = lines[idx++].JsonToInt1d();
-                Verify(nums, exp);
-            }
+            Verify.Method(new Solution(), lines, 0);
         }
     }
 }

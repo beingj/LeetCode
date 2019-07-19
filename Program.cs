@@ -84,7 +84,7 @@ namespace LeetCode
             // EditDistance.Test.Run();
             // SetMatrixZeroes.Test.Run();
             // SearchA2DMatrix.Test.Run();
-            // SortColors.Test.Run();
+            SortColors.Test.Run();
             // MinimumWindowSubstring.Test.Run();
             // Combinations.Test.Run();
             // Subsets.Test.Run();
@@ -95,7 +95,7 @@ namespace LeetCode
             // RemoveDuplicatesFromSortedList.Test.Run();
             // LargestRectangleInHistogram.Test.Run();
             // MaximalRectangle.Test.Run();
-            // PartitionList.Test.Run();
+            PartitionList.Test.Run();
             // ScrambleString.Test.Run();
         }
     }

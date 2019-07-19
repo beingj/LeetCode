@@ -69,8 +69,6 @@ namespace RemoveDuplicatesFromSortedArrayII
     {
         static public void Run()
         {
-            // Console.WriteLine(typeof(Solution).Namespace);
-
             var input = @"
 [1,1,1,2,2,3]
 5
