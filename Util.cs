@@ -254,7 +254,6 @@ namespace Util
         public Func<string, dynamic> ToType(Type t)
         {
             Func<string, dynamic> f = (x) => x;
-            // TODO: fill all converters
             if (t == typeof(int))
             {
                 f = x => int.Parse(x);
@@ -262,6 +261,22 @@ namespace Util
             else if (t == typeof(ListNode))
             {
                 f = x => x.JsonToListNode();
+            }
+            else if (t == typeof(int[]))
+            {
+                f = x => x.JsonToInt1d();
+            }
+            else if (t == typeof(int[][]))
+            {
+                f = x => x.JsonToInt2d();
+            }
+            else if (t == typeof(char[][]))
+            {
+                f = x => x.JsonToChar2d();
+            }
+            else if (t == typeof(string[]))
+            {
+                f = x => x.JsonToStr1d();
             }
             return f;
         }
@@ -322,8 +337,9 @@ namespace Util
     }
     public class Verify
     {
-        public static void Method(dynamic obj, string[] lines)
+        public static void Method(dynamic obj, string[] lines, int checkParaIndex = -1, bool truncate = false)
         {
+            dynamic para = null, paraExpS = null, paraExpV = null, paraExpT = null;
             MethodInfo method = Util.Method.GetMethodsFromType(obj.GetType())[0];
             var inputTypes = Util.Method.GetParametersAndReturnTypes(method);
             var signature = string.Format("{0}.{1}({2}) => {3}",
@@ -332,6 +348,13 @@ namespace Util
                             string.Join(", ", inputTypes.SkipLast(1)),
                             inputTypes.Last());
             Console.WriteLine(signature);
+            Type expType = inputTypes.Last();
+            if (checkParaIndex >= 0)
+            {
+                paraExpT = inputTypes[checkParaIndex];
+                inputTypes.Add(paraExpT);
+                Console.WriteLine($"And in-place change parameter {checkParaIndex}: {paraExpT}");
+            }
 
             var inputParser = new InputConverterList(inputTypes);
             var maxChars = 100;
@@ -349,15 +372,40 @@ namespace Util
                     dynamic tv = Convert.ChangeType(p.converter(s), p.type);
                     vs.Add(tv);
                 }
-                Console.WriteLine(string.Format("{0,-50} => {1}", string.Join(" | ", ss.SkipLast(1)), ss.Last()));
+
+                if (checkParaIndex >= 0)
+                {
+                    para = vs[checkParaIndex];
+                    paraExpS = ss.Last();
+                    ss.RemoveAt(ss.Count - 1);
+                    paraExpV = vs.Last();
+                    vs.RemoveAt(vs.Count - 1);
+                    Console.WriteLine(string.Format("{0,-50} => {1} | {2}", string.Join(" | ", ss.SkipLast(1)), ss.Last(), paraExpS));
+                }
+                else
+                {
+                    Console.WriteLine(string.Format("{0,-50} => {1}", string.Join(" | ", ss.SkipLast(1)), ss.Last()));
+                }
                 dynamic res;
                 using (new Timeit())
                 {
                     res = method.Invoke(obj, vs.SkipLast(1).ToArray());
                 }
                 // TODO: how about return void?
-                dynamic exp = Convert.ChangeType(vs.Last(), inputTypes.Last());
-                Assert.Equal(exp, res);
+                // Assert.Equal(exp, res);
+                Assert.Equal(vs.Last(), res);
+
+                if (checkParaIndex >= 0)
+                {
+                    if (truncate)
+                    {
+                        // https://github.com/dotnet/coreclr/issues/15186
+                        // The dynamic binder does not—and should not—consider extension method syntax in deciding which overload to bind to.
+                        // You should use the static method call syntax of TaskExtensions.TaskExtension(DoSomething(thing)); instead.
+                        para = Enumerable.Take(para, res);
+                    }
+                    Assert.Equal(paraExpV, para);
+                }
             }
         }
         public static void Function(string inputToString, Func<dynamic> func, dynamic exp)

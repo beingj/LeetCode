@@ -67,20 +67,9 @@ namespace RemoveDuplicatesFromSortedArrayII
     }
     public class Test
     {
-        static void Verify(int[] nums, int exp, int[] expNums)
-        {
-            Console.WriteLine($"{nums.Int1dToJson()}");
-            int res;
-            using (new Timeit())
-            {
-                res = new Solution().RemoveDuplicates(nums);
-            }
-            Assert.Equal(exp, res);
-            Assert.Equal(expNums.Take(exp).ToArray(), nums.Take(res).ToArray());
-        }
         static public void Run()
         {
-            Console.WriteLine(typeof(Solution).Namespace);
+            // Console.WriteLine(typeof(Solution).Namespace);
 
             var input = @"
 [1,1,1,2,2,3]
@@ -91,16 +80,7 @@ namespace RemoveDuplicatesFromSortedArrayII
 [0, 0, 1, 1, 2, 3, 3]
 ";
             var lines = input.CleanInput();
-            int[] nums, expNums;
-            int exp;
-            int idx = 0;
-            while (idx < lines.Length)
-            {
-                nums = lines[idx++].JsonToInt1d();
-                exp = int.Parse(lines[idx++]);
-                expNums = lines[idx++].JsonToInt1d();
-                Verify(nums, exp, expNums);
-            }
+            Verify.Method(new Solution(), lines, 0, true);
         }
     }
 }

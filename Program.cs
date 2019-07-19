@@ -89,13 +89,14 @@ namespace LeetCode
             // Combinations.Test.Run();
             // Subsets.Test.Run();
             // WordSearch.Test.Run();
-            // RemoveDuplicatesFromSortedArrayII.Test.Run();
+            RemoveDuplicatesFromSortedArrayII.Test.Run();
             // SearchInRotatedSortedArrayII.Test.Run();
             // RemoveDuplicatesFromSortedListII.Test.Run();
             // RemoveDuplicatesFromSortedList.Test.Run();
             // LargestRectangleInHistogram.Test.Run();
             // MaximalRectangle.Test.Run();
-            PartitionList.Test.Run();
+            // PartitionList.Test.Run();
+            // ScrambleString.Test.Run();
         }
     }
 
