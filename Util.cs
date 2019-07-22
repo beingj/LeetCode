@@ -278,7 +278,111 @@ namespace Util
             {
                 f = x => x.JsonToStr1d();
             }
+            else if (t == typeof(IList<int>))
+            {
+                f = x => new IListInt(x);
+            }
             return f;
+        }
+    }
+    public class IListInt : IConvertible
+    {
+        // https://docs.microsoft.com/en-us/dotnet/api/system.iconvertible?view=netframework-4.8
+        // Fix throw error: Object must implement IConvertible
+        // when: dynamic tv = Convert.ChangeType(p.converter(s), p.type);
+        List<int> Lst = new List<int>();
+
+        public IListInt(string s)
+        {
+            Lst = s.JsonToInt1d().ToList();
+        }
+        public TypeCode GetTypeCode()
+        {
+            return TypeCode.Object;
+        }
+
+        bool IConvertible.ToBoolean(IFormatProvider provider)
+        {
+            return true;
+        }
+        double GetDoubleValue()
+        {
+            return (double)Lst.FirstOrDefault();
+        }
+        byte IConvertible.ToByte(IFormatProvider provider)
+        {
+            return Convert.ToByte(GetDoubleValue());
+        }
+
+        char IConvertible.ToChar(IFormatProvider provider)
+        {
+            return Convert.ToChar(GetDoubleValue());
+        }
+
+        DateTime IConvertible.ToDateTime(IFormatProvider provider)
+        {
+            return Convert.ToDateTime(GetDoubleValue());
+        }
+
+        decimal IConvertible.ToDecimal(IFormatProvider provider)
+        {
+            return Convert.ToDecimal(GetDoubleValue());
+        }
+
+        double IConvertible.ToDouble(IFormatProvider provider)
+        {
+            return GetDoubleValue();
+        }
+
+        short IConvertible.ToInt16(IFormatProvider provider)
+        {
+            return Convert.ToInt16(GetDoubleValue());
+        }
+
+        int IConvertible.ToInt32(IFormatProvider provider)
+        {
+            return Convert.ToInt32(GetDoubleValue());
+        }
+
+        long IConvertible.ToInt64(IFormatProvider provider)
+        {
+            return Convert.ToInt64(GetDoubleValue());
+        }
+
+        sbyte IConvertible.ToSByte(IFormatProvider provider)
+        {
+            return Convert.ToSByte(GetDoubleValue());
+        }
+
+        float IConvertible.ToSingle(IFormatProvider provider)
+        {
+            return Convert.ToSingle(GetDoubleValue());
+        }
+
+        string IConvertible.ToString(IFormatProvider provider)
+        {
+            return string.Join(",", Lst);
+        }
+
+        object IConvertible.ToType(Type conversionType, IFormatProvider provider)
+        {
+            // return Convert.ChangeType(GetDoubleValue(), conversionType);
+            return Lst;
+        }
+
+        ushort IConvertible.ToUInt16(IFormatProvider provider)
+        {
+            return Convert.ToUInt16(GetDoubleValue());
+        }
+
+        uint IConvertible.ToUInt32(IFormatProvider provider)
+        {
+            return Convert.ToUInt32(GetDoubleValue());
+        }
+
+        ulong IConvertible.ToUInt64(IFormatProvider provider)
+        {
+            return Convert.ToUInt64(GetDoubleValue());
         }
     }
     public class InputConverterList : List<InputConverter>
@@ -352,6 +456,10 @@ namespace Util
             bool retVoid = false;
             if (retExpType == typeof(void))
             {
+                if (checkParaIndex < 0)
+                {
+                    throw new ArgumentException("checkParaIndex should be set when return type is void", "checkParaIndex");
+                }
                 retVoid = true;
                 inputTypes.RemoveAt(inputTypes.Count - 1);
             }

@@ -96,7 +96,9 @@ namespace LeetCode
             // LargestRectangleInHistogram.Test.Run();
             // MaximalRectangle.Test.Run();
             // PartitionList.Test.Run();
-            ScrambleString.Test.Run();
+            // ScrambleString.Test.Run();
+            // MergeSortedArray.Test.Run();
+            GrayCode.Test.Run();
         }
     }
 
