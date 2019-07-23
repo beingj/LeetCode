@@ -98,7 +98,10 @@ namespace LeetCode
             // ScrambleString.Test.Run();
             // MergeSortedArray.Test.Run();
             // GrayCode.Test.Run();
-            SubsetsII.Test.Run();
+            // SubsetsII.Test.Run();
+            // DecodeWays.Test.Run();
+            // ReverseLinkedListII.Test.Run();
+            RestoreIpAddresses.Test.Run();
         }
     }
 

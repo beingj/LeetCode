@@ -159,6 +159,21 @@ namespace Util
         {
             return string.Format("[{0}]", string.Join(',', a.Select(i => $"\"{i}\"")));
         }
+        public static IList<string> JsonToIListStr(this string s)
+        {
+            if (s.Trim() == "[]")
+            {
+                return new List<string>();
+            }
+            return s.TrimStart('[').TrimEnd(']')
+                    .Split(',')
+                    .Select(x => x.Trim().Trim('"'))
+                    .ToList();
+        }
+        public static string IListStrToJson(this IList<string> a)
+        {
+            return string.Format("[{0}]", string.Join(',', a.Select(i => $"\"{i}\"")));
+        }
         public static int[] JsonToInt1d(this string s)
         {
             return s.TrimStart('[').TrimEnd(']')
@@ -248,6 +263,25 @@ namespace Util
         {
             return a.Select(i => i.OrderBy(j => j).ToArray()).OrderBy(k => string.Join(',', k)).ToArray();
         }
+        public static IList<string> Sorted(this IList<string> a)
+        {
+            return a.OrderBy(j => j).ToList();
+        }
+        public static IList<IList<string>> Sorted(this IList<IList<string>> a)
+        {
+            var lst = a.Select(i => i.OrderBy(j => j).ToList()).OrderBy(k => string.Join(',', k)).ToList();
+            var res = new List<IList<string>>();
+            res.AddRange(lst);
+            return res;
+        }
+        public static string[] Sorted(this string[] a)
+        {
+            return a.OrderBy(j => j).ToArray();
+        }
+        public static string[][] Sorted(this string[][] a)
+        {
+            return a.Select(i => i.OrderBy(j => j).ToArray()).OrderBy(k => string.Join(',', k)).ToArray();
+        }
         public static char[][] JsonToChar2d(this string s, char quote = '\'')
         {
             return s.TrimStart(new char[] { '[', ' ' }).TrimEnd(new char[] { ']', ' ' })
@@ -316,13 +350,29 @@ namespace Util
         public Func<string, dynamic> ToType(Type t)
         {
             Func<string, dynamic> f = (x) => x;
-            if (t == typeof(int))
+            if (t == typeof(string))
             {
-                f = x => int.Parse(x);
+                f = x => x.Trim().Trim('"');
+            }
+            else if (t == typeof(string[]))
+            {
+                f = x => x.JsonToStr1d();
+            }
+            else if (t == typeof(IList<string>))
+            {
+                f = x => x.JsonToIListStr();
             }
             else if (t == typeof(ListNode))
             {
                 f = x => x.JsonToListNode();
+            }
+            else if (t == typeof(bool))
+            {
+                f = x => bool.Parse(x);
+            }
+            else if (t == typeof(int))
+            {
+                f = x => int.Parse(x);
             }
             else if (t == typeof(int[]))
             {
@@ -332,14 +382,6 @@ namespace Util
             {
                 f = x => x.JsonToInt2d();
             }
-            else if (t == typeof(char[][]))
-            {
-                f = x => x.JsonToChar2d();
-            }
-            else if (t == typeof(string[]))
-            {
-                f = x => x.JsonToStr1d();
-            }
             else if (t == typeof(IList<int>))
             {
                 f = x => x.JsonToIListInt();
@@ -348,13 +390,9 @@ namespace Util
             {
                 f = x => x.JsonToIListIListInt();
             }
-            else if (t == typeof(string))
+            else if (t == typeof(char[][]))
             {
-                f = x => x;
-            }
-            else if (t == typeof(bool))
-            {
-                f = x => bool.Parse(x);
+                f = x => x.JsonToChar2d();
             }
             else
             {
