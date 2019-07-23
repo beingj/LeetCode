@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -169,6 +170,17 @@ namespace Util
         {
             return string.Format("[{0}]", string.Join(',', a));
         }
+        public static IList<int> JsonToIListInt(this string s)
+        {
+            return s.TrimStart('[').TrimEnd(']')
+                    .Split(',')
+                    .Select(y => int.Parse(y))
+                    .ToList();
+        }
+        public static string IListIntToJson(this IList<int> a)
+        {
+            return string.Format("[{0}]", string.Join(',', a));
+        }
         public static int[][] JsonToInt2d(this string s)
         {
             return s.TrimStart(new char[] { '[', ' ' }).TrimEnd(new char[] { ']', ' ' })
@@ -185,6 +197,56 @@ namespace Util
         {
             return string.Format("[{0}]", string.Join(",", a.Select(x =>
                         string.Format("[{0}]", string.Join(',', x)))));
+        }
+        public static IList<IList<int>> JsonToIListIListInt(this string s)
+        {
+            var lst = s.TrimStart(new char[] { '[', ' ' }).TrimEnd(new char[] { ']', ' ' })
+                    .Split("],")
+                    .Select(x =>
+                                x.TrimStart(new char[] { '[', ' ' }).TrimEnd(new char[] { ']', ' ' })
+                                .Split(',')
+                                .Where(z => z.Length > 0)
+                                .Select(y => int.Parse(y))
+                                .ToList())
+                    .ToList();
+            var res = new List<IList<int>>();
+            res.AddRange(lst);
+            return res;
+        }
+        public static string IListIListIntToJson(this IList<IList<int>> a)
+        {
+            return string.Format("[{0}]", string.Join(",", a.Select(x =>
+                        string.Format("[{0}]", string.Join(',', x)))));
+        }
+        public static int[][] IListIListIntToInt2d(this IList<IList<int>> a)
+        {
+            return a.Select(i => i.ToArray()).ToArray();
+        }
+        public static IList<IList<int>> Int2dToIListIListInt(this int[][] a)
+        {
+            var lst = a.Select(i => i.ToList()).ToList();
+            var res = new List<IList<int>>();
+            res.AddRange(lst);
+            return res;
+        }
+        public static IList<int> Sorted(this IList<int> a)
+        {
+            return a.OrderBy(j => j).ToList();
+        }
+        public static IList<IList<int>> Sorted(this IList<IList<int>> a)
+        {
+            var lst = a.Select(i => i.OrderBy(j => j).ToList()).OrderBy(k => string.Join(',', k)).ToList();
+            var res = new List<IList<int>>();
+            res.AddRange(lst);
+            return res;
+        }
+        public static int[] Sorted(this int[] a)
+        {
+            return a.OrderBy(j => j).ToArray();
+        }
+        public static int[][] Sorted(this int[][] a)
+        {
+            return a.Select(i => i.OrderBy(j => j).ToArray()).OrderBy(k => string.Join(',', k)).ToArray();
         }
         public static char[][] JsonToChar2d(this string s, char quote = '\'')
         {
@@ -280,7 +342,11 @@ namespace Util
             }
             else if (t == typeof(IList<int>))
             {
-                f = x => x.JsonToInt1d().ToList();
+                f = x => x.JsonToIListInt();
+            }
+            else if (t == typeof(IList<IList<int>>))
+            {
+                f = x => x.JsonToIListIListInt();
             }
             else if (t == typeof(string))
             {
@@ -353,7 +419,7 @@ namespace Util
     }
     public class Verify
     {
-        public static void Method(dynamic obj, string[] lines, int checkParaIndex = -1, bool truncate = false)
+        public static void Method(dynamic obj, string[] lines, int checkParaIndex = -1, bool truncate = false, bool sortRet = false, bool sortPara = false)
         {
             MethodInfo method = Util.Method.GetMethodsFromType(obj.GetType())[0];
             var inputTypes = Util.Method.GetParametersAndReturnTypes(method);
@@ -446,7 +512,19 @@ namespace Util
                     {
                         ret = method.Invoke(obj, vs.SkipLast(1).ToArray());
                     }
-                    Assert.Equal(vs.Last(), ret);
+                    var exp = vs.Last();
+                    if (sortRet)
+                    {
+                        // https://stackoverflow.com/questions/28701867/checking-if-type-or-instance-implements-ienumerable-regardless-of-type-t/28701974#28701974
+                        var isIEnumerable = typeof(IEnumerable).IsAssignableFrom(exp.GetType());
+                        if (!isIEnumerable)
+                        {
+                            throw new ArgumentException("sortRet should not be set to true when return type is not IEnumerable", "sortRet");
+                        }
+                        ret = Ext.Sorted(ret);
+                        exp = Ext.Sorted(exp);
+                    }
+                    Assert.Equal(exp, ret);
                 }
 
                 if (checkParaIndex >= 0)
@@ -457,6 +535,16 @@ namespace Util
                         // The dynamic binder does not—and should not—consider extension method syntax in deciding which overload to bind to.
                         // You should use the static method call syntax of TaskExtensions.TaskExtension(DoSomething(thing)); instead.
                         checkPara = Enumerable.Take(checkPara, ret);
+                    }
+                    if (sortPara)
+                    {
+                        var isIEnumerable = typeof(IEnumerable).IsAssignableFrom(checkParaExpV.GetType());
+                        if (!isIEnumerable)
+                        {
+                            throw new ArgumentException("sortPara should not be set to true when para type is not IEnumerable", "sortPara");
+                        }
+                        checkParaExpV = Ext.Sorted(checkParaExpV);
+                        checkPara = Ext.Sorted(checkPara);
                     }
                     Assert.Equal(checkParaExpV, checkPara);
                 }

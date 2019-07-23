@@ -65,7 +65,7 @@ namespace GrayCode
 [0, 16, 24, 8, 12, 28, 20, 4, 6, 22, 30, 14, 10, 26, 18, 2, 3, 19, 27, 11, 15, 31, 23, 7, 5, 21, 29, 13, 9, 25, 17, 1]
 ";
             var lines = input.CleanInput();
-            Verify.Method(new Solution(), lines);
+            Verify.Method(new Solution(), lines, sortRet: true);
         }
     }
 }

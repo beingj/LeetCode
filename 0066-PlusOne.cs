@@ -42,20 +42,8 @@ namespace PlusOne
 
     public class Test
     {
-        static void Verify(int[] digits, int[] exp)
-        {
-            Console.WriteLine(digits.Int1dToJson());
-            int[] res;
-            using (new Timeit())
-            {
-                res = new Solution().PlusOne(digits);
-            }
-            Assert.Equal(exp, res);
-        }
         static public void Run()
         {
-            Console.WriteLine("PlusOne");
-
             var input = @"
 [1,2,3]
 [1,2,4]
@@ -64,17 +52,8 @@ namespace PlusOne
 [9,9,9]
 [1,0,0,0]
 ";
-            var lines = input.Trim(new char[] { '\n', '\r', ' ' }).Split('\n')
-                            .Select(x => x.Trim(new char[] { '\r', ' ' })).Where(y => !y.StartsWith('#')).ToArray();
-            int[] digits;
-            int[] exp;
-            int idx = 0;
-            while (idx < lines.Length)
-            {
-                digits = lines[idx++].JsonToInt1d();
-                exp = lines[idx++].JsonToInt1d();
-                Verify(digits, exp);
-            }
+            var lines=input.CleanInput();
+            Verify.Method(new Solution(), lines, sortRet: true);
         }
     }
 }
