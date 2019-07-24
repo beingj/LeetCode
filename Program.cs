@@ -101,7 +101,8 @@ namespace LeetCode
             // SubsetsII.Test.Run();
             // DecodeWays.Test.Run();
             // ReverseLinkedListII.Test.Run();
-            RestoreIpAddresses.Test.Run();
+            // RestoreIpAddresses.Test.Run();
+            BinaryTreeInorderTraversal.Test.Run();
         }
     }
 

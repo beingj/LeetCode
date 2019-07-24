@@ -100,6 +100,180 @@ namespace Util
             return this.GetHashCode();
         }
     }
+    public class TreeNode
+    {
+        public int val;
+        public TreeNode left;
+        public TreeNode right;
+        public TreeNode(int x) { val = x; }
+
+        public static TreeNode FromDLRSeq(IEnumerable<string> nodesSeq, TreeNode parent = null)
+        {
+            if (nodesSeq.Count() == 0)
+            {
+                return null;
+            }
+            if (parent == null)
+            {
+                var x = nodesSeq.First();
+                nodesSeq = nodesSeq.Skip(1);
+                parent = new TreeNode(int.Parse(x));
+            }
+
+            var child = nodesSeq.First();
+            nodesSeq = nodesSeq.Skip(1);
+            if (child != "null")
+            {
+                parent.left = new TreeNode(int.Parse(child));
+                FromDLRSeq(nodesSeq, parent.left);
+            }
+            else
+            {
+                // left is null
+                child = nodesSeq.First();
+                nodesSeq = nodesSeq.Skip(1);
+                if (child != "null")
+                {
+                    parent.right = new TreeNode(int.Parse(child));
+                    FromDLRSeq(nodesSeq, parent.right);
+                }
+            }
+            return parent;
+        }
+        public List<string> DLR(List<string> res = null)
+        {
+            return DLR(this);
+        }
+        // https://zhidao.baidu.com/question/682276251728268972.html
+        /*先根递归遍历*/
+        public static List<string> DLR(TreeNode tn, List<string> res = null)
+        {
+            if (res == null)
+            {
+                res = new List<string>();
+            }
+            if (tn != null)
+            {
+                res.Add($"{tn.val}");
+                if ((tn.left != null) ||
+                    ((tn.left == null) && (tn.right != null)))
+                    DLR(tn.left, res);
+                if (tn.right != null) DLR(tn.right, res);
+            }
+            else
+            {
+                res.Add("null");
+            }
+            return res;
+        }
+        /*中根递归遍历*/
+        public static IList<int> LDR(TreeNode tn, IList<int> res = null)
+        {
+            if (res == null)
+            {
+                res = new List<int>();
+            }
+            if (tn != null)
+            {
+                if ((tn.left != null) ||
+                    ((tn.left == null) && (tn.right != null)))
+                    LDR(tn.left, res);
+                res.Add(tn.val);
+                if (tn.right != null) LDR(tn.right, res);
+            }
+            return res;
+        }
+        /*后根递归遍历*/
+        public static List<string> LRD(TreeNode tn, List<string> res = null)
+        {
+            if (res == null)
+            {
+                res = new List<string>();
+            }
+            if (tn != null)
+            {
+                if ((tn.left != null) ||
+                    ((tn.left == null) && (tn.right != null)))
+                    LRD(tn.left, res);
+                if ((tn.right != null) || (tn.left != null))
+                    LRD(tn.right, res);
+                res.Add($"{tn.val}");
+            }
+            else
+            {
+                res.Add("null");
+            }
+            return res;
+        }
+        public static TreeNode FromStr(string s)
+        {
+            var seq = s.Trim().TrimStart('[').TrimEnd(']')
+                        .Split(',')
+                        .Select(i => i.Trim());
+            return FromDLRSeq(seq);
+        }
+        public override string ToString()
+        {
+            return string.Format("[{0}]", string.Join(',', DLR()));
+        }
+        public override bool Equals(Object obj)
+        {
+            //Check for null and compare run-time types.
+            if ((obj == null) || !this.GetType().Equals(obj.GetType()))
+            {
+                return false;
+            }
+            else
+            {
+                return this.ToString() == ((TreeNode)obj).ToString();
+            }
+        }
+        public override int GetHashCode()
+        {
+            // warning CS0659: '“ListNode”重写 Object.Equals(
+            // object o) 但不重写 Object.GetHashCode()
+
+            // https://docs.microsoft.com/en-us/dotnet/api/system.object.gethashcode?view=netframework-4.8
+            // return this.ToString().GetHashCode();
+            return this.GetHashCode();
+        }
+        public static void TestTreeNode()
+        {
+            // var root = new TreeNode(1);
+            // root.left = new TreeNode(2);
+            // root.right = new TreeNode(3);
+
+            // root.left.left = new TreeNode(4);
+            // root.left.right = new TreeNode(5);
+
+            // root.right.left = new TreeNode(6);
+            // root.right.right = new TreeNode(7);
+
+            // [1,null,2,3]
+            // var root = new TreeNode(1);
+            // root.right = new TreeNode(2);
+            // root.right.left = new TreeNode(3);
+
+            // var root = FromDLR("1,2,4,5,3,6,7".Split(",").ToList());
+            // var root = FromDLR("1,null,2,3".Split(",").ToList());
+            // var root = TreeNode.FromDLRSeq("1,null,2,3".Split(",").ToList());
+            var root = "1,null,2,3".JsonToTreeNode();
+
+            Console.WriteLine("/*先根递归遍历*/");
+            var res = TreeNode.DLR(root);
+            Console.WriteLine(string.Join(", ", res));
+
+            Console.WriteLine();
+            Console.WriteLine("/*中根递归遍历*/");
+            var res2 = TreeNode.LDR(root);
+            Console.WriteLine(string.Join(", ", res2));
+
+            Console.WriteLine();
+            Console.WriteLine("/*后根递归遍历*/");
+            var res3 = TreeNode.LRD(root);
+            Console.WriteLine(string.Join(", ", res3));
+        }
+    }
     static class Ext
     {
         public static string P(this int[] nums, string sep = ",")
@@ -311,6 +485,14 @@ namespace Util
             var s = string.Join(',', ln.ToString().Split("->"));
             return string.Format("[{0}]", s);
         }
+        public static TreeNode JsonToTreeNode(this string s)
+        {
+            return TreeNode.FromStr(s);
+        }
+        public static string TreeNodeToJson(this TreeNode tn)
+        {
+            return tn.ToString();
+        }
     }
     public class Timeit : IDisposable
     {
@@ -365,6 +547,10 @@ namespace Util
             else if (t == typeof(ListNode))
             {
                 f = x => x.JsonToListNode();
+            }
+            else if (t == typeof(TreeNode))
+            {
+                f = x => x.JsonToTreeNode();
             }
             else if (t == typeof(bool))
             {
