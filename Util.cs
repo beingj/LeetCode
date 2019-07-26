@@ -214,7 +214,168 @@ namespace Util
         }
         public override string ToString()
         {
-            return string.Format("[{0}]", string.Join(',', DLR()));
+            // return string.Format("[{0}]", string.Join(',', DLR()));
+            // return string.Format("[{0}]", string.Join(',', DLRWithLevel(this)));
+            // var n = "[1,null,2,3]".JsonToTreeNode();
+            // Console.WriteLine(n);
+            // Console.WriteLine(n);
+            // Console.WriteLine(n.ToStr(5, 3));
+            // Console.WriteLine(n.ToStr(5, 3, true));
+            // n = "[1,2,3,4,5]".JsonToTreeNode();
+            // Console.WriteLine(n);
+            return ToStr();
+        }
+        public string ToStr(int leafSpaceN = 3, int branchSpaceN = 1, bool ignoreX = false)
+        {
+            string X = "x";
+            string Null = "u";
+            var path = DLRPath(this);
+            var level = path.Keys.Select(i => i.Length).Max();
+
+            var leafSpace = " ".Repeat(leafSpaceN);
+            var branchSpace = " ".Repeat(branchSpaceN);
+            var leafN = (int)Math.Pow(2, level);
+            var maxLen = leafN / 2 * (leafSpaceN + 2) + (leafN / 2 - 1) * branchSpaceN;
+            // Console.WriteLine($"maxLen: {maxLen}");
+
+            var pathListEachLvl = new List<List<string>>();
+            pathListEachLvl.Add(new List<string> { "" });
+            for (var i = 1; i <= level; i++)
+            {
+                var lst = new List<string>();
+                foreach (var p in pathListEachLvl.Last())
+                {
+                    lst.Add($"{p}L");
+                    lst.Add($"{p}R");
+                }
+                pathListEachLvl.Add(lst);
+            }
+            IEnumerable<string> GetVal(List<string> pathList)
+            {
+                foreach (var p in pathList)
+                {
+                    string v = X;
+                    if (path.ContainsKey(p))
+                    {
+                        if (path[p] == "null") v = Null;
+                        else v = path[p];
+                    }
+                    yield return v;
+                }
+            }
+
+            var lastLvl = pathListEachLvl.Last();
+            var colIdxList = new List<(string val, int idx)>();
+            var colIdx = 0;
+            var isEven = true;
+            foreach (var v in GetVal(lastLvl))
+            {
+                colIdxList.Add((v, colIdx));
+                colIdx++;
+                colIdx += isEven ? leafSpaceN : branchSpaceN;
+                isEven = !isEven;
+            }
+
+            var colIdxListEachLvl = new List<List<(string val, int idx)>>();
+            colIdxListEachLvl.Add(colIdxList);
+
+            for (var lvl = level - 1; lvl >= 0; lvl--)
+            {
+                var lastColIdx = colIdxListEachLvl.Last();
+                var valIdx = 0;
+                colIdxList = new List<(string val, int idx)>();
+                foreach (var v in GetVal(pathListEachLvl[lvl]))
+                {
+                    colIdx = (lastColIdx[valIdx * 2].idx + lastColIdx[valIdx * 2 + 1].idx) / 2;
+                    colIdxList.Add((v, colIdx));
+                    valIdx++;
+                }
+                colIdxListEachLvl.Add(colIdxList);
+            }
+
+            var colIdxListEachLine = new List<List<(string val, int idx)>>();
+            foreach (var lvl in colIdxListEachLvl.SkipLast(1))
+            {
+                colIdxListEachLine.Add(lvl);
+                var x = new List<(string val, int idx)>();
+                isEven = true;
+                foreach (var v in lvl)
+                {
+                    if (v.val == X && ignoreX) { }
+                    else x.Add(isEven ? ("/", v.idx + 1) : ("\\", v.idx - 1));
+                    isEven = !isEven;
+                }
+                colIdxListEachLine.Add(x);
+            }
+            colIdxListEachLine.Add(colIdxListEachLvl.Last());
+            colIdxListEachLine.Reverse();
+
+            var ss = new List<string>();
+            foreach (var lvl in colIdxListEachLine)
+            {
+                var s = new char[lvl.Last().idx + 1];
+                for (int i = 0; i < s.Length; i++)
+                {
+                    s[i] = ' ';
+                }
+                foreach (var v in lvl)
+                {
+                    if (v.val == X && ignoreX) { }
+                    else
+                    {
+                        var i = v.idx;
+                        foreach (var j in v.val)
+                        {
+                            s[i++] = j;
+                        }
+                    }
+                }
+                ss.Add(new string(s));
+            }
+
+            return string.Join("\n", ss);
+        }
+        public static Dictionary<string, string> DLRPath(TreeNode tn, Dictionary<string, string> res = null, string path = "")
+        {
+            if (res == null)
+            {
+                res = new Dictionary<string, string>();
+            }
+            if (tn != null)
+            {
+                // res.Add($"{tn.val}|{path}");
+                res[path] = $"{tn.val}";
+                if ((tn.left != null) ||
+                    ((tn.left == null) && (tn.right != null)))
+                    DLRPath(tn.left, res, $"{path}L");
+                if (tn.right != null) DLRPath(tn.right, res, path + $"{path}R");
+            }
+            else
+            {
+                // res.Add($"null|{path}");
+                res[path] = "null";
+            }
+            return res;
+        }
+        public static List<string> DLRWithLevel(TreeNode tn, List<string> res = null, int level = 0)
+        {
+            if (res == null)
+            {
+                res = new List<string>();
+            }
+            if (tn != null)
+            {
+                res.Add($"{tn.val}|{level}");
+                if ((tn.left != null) ||
+                    ((tn.left == null) && (tn.right != null)))
+                    DLRWithLevel(tn.left, res, level + 1);
+                if (tn.right != null) DLRWithLevel(tn.right, res, level + 1);
+            }
+            else
+            {
+                res.Add($"null|{level}");
+            }
+            return res;
         }
         public override bool Equals(Object obj)
         {
@@ -276,6 +437,15 @@ namespace Util
     }
     static class Ext
     {
+        public static string Repeat(this string s, int n)
+        {
+            var sb = new StringBuilder();
+            for (var i = 0; i < n; i++)
+            {
+                sb.Append(s);
+            }
+            return sb.ToString();
+        }
         public static string P(this int[] nums, string sep = ",")
         {
             return string.Join(sep, nums);
@@ -509,7 +679,7 @@ namespace Util
         {
             //Stop the Timer
             sw.Stop();
-            string ExecutionTimeTaken = string.Format("{0}s {1}ms", sw.Elapsed.Seconds, sw.Elapsed.TotalMilliseconds);
+            string ExecutionTimeTaken = string.Format("{0:00} s {1:0.00000} ms", sw.Elapsed.Seconds, sw.Elapsed.TotalMilliseconds);
             Console.WriteLine(ExecutionTimeTaken);
             //    sw.Restart();
         }

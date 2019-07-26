@@ -39,7 +39,7 @@ namespace BinaryTreeInorderTraversal
 [1,3,2]
 ";
             var lines = input.CleanInput();
-            Verify.Method(new Solution(), lines, sortRet: true);
+            Verify.Method(new Solution(), lines);
         }
     }
 }

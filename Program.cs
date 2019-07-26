@@ -102,7 +102,9 @@ namespace LeetCode
             // DecodeWays.Test.Run();
             // ReverseLinkedListII.Test.Run();
             // RestoreIpAddresses.Test.Run();
-            BinaryTreeInorderTraversal.Test.Run();
+            // BinaryTreeInorderTraversal.Test.Run();
+            // UniqueBinarySearchTreesII.Test.Run();
+            UniqueBinarySearchTrees.Test.Run();
         }
     }
 
