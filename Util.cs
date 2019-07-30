@@ -106,8 +106,7 @@ namespace Util
         public TreeNode left;
         public TreeNode right;
         public TreeNode(int x) { val = x; }
-
-        public static TreeNode FromDLRSeq(IEnumerable<string> nodesSeq, TreeNode parent = null)
+        public static TreeNode FromDLRSeq(IEnumerable<string> nodesSeq, TreeNode parent = null, List<TreeNode> ancestors = null)
         {
             if (nodesSeq.Count() == 0)
             {
@@ -119,13 +118,29 @@ namespace Util
                 nodesSeq = nodesSeq.Skip(1);
                 parent = new TreeNode(int.Parse(x));
             }
+            if (ancestors == null)
+            {
+                ancestors = new List<TreeNode>();
+            }
 
             var child = nodesSeq.First();
             nodesSeq = nodesSeq.Skip(1);
             if (child != "null")
             {
-                parent.left = new TreeNode(int.Parse(child));
-                FromDLRSeq(nodesSeq, parent.left);
+                var n = new TreeNode(int.Parse(child));
+                if (parent.left == null)
+                {
+                    parent.left = n;
+                }
+                else
+                {
+                    parent.right = n;
+                }
+                // parent.left = n;
+                var ancestors2 = new List<TreeNode>();
+                ancestors2.AddRange(ancestors);
+                ancestors2.Add(parent);
+                FromDLRSeq(nodesSeq, n, ancestors2);
             }
             else
             {
@@ -134,10 +149,39 @@ namespace Util
                 nodesSeq = nodesSeq.Skip(1);
                 if (child != "null")
                 {
-                    parent.right = new TreeNode(int.Parse(child));
-                    FromDLRSeq(nodesSeq, parent.right);
+                    var n = new TreeNode(int.Parse(child));
+                    if (parent.right == null)
+                    {
+                        parent.right = n;
+                        var ancestors2 = new List<TreeNode>();
+                        ancestors2.AddRange(ancestors);
+                        ancestors2.Add(parent);
+                        FromDLRSeq(nodesSeq, n, ancestors2);
+                    }
+                    else
+                    {
+                        // var ancestor = ancestors.Last();
+                        // ancestors.RemoveAt(ancestors.Count - 1);
+                        // FromDLRSeq(nodesSeq, ancestor, ancestors);
+                    }
+                }
+                else
+                {
+                    // right is null
+                    var ancestor = ancestors.Last();
+                    while (ancestors.Count > 0)
+                    {
+                        if (ancestor.right == null)
+                        {
+                            break;
+                        }
+                        ancestor = ancestors.Last();
+                        ancestors.RemoveAt(ancestors.Count - 1);
+                    }
+                    FromDLRSeq(nodesSeq, ancestor, ancestors);
                 }
             }
+
             return parent;
         }
         public List<string> DLR(List<string> res = null)
@@ -205,12 +249,62 @@ namespace Util
             }
             return res;
         }
+        static TreeNode FromStrByLevel(List<string> seq)
+        {
+            if (seq.Count == 0)
+            {
+                return null;
+            }
+            var root = new TreeNode(int.Parse(seq.First()));
+            var pathDict = new Dictionary<string, TreeNode>();
+            pathDict[""] = root;
+            var pathOfLvl = new List<string> { "" };
+            int idx = 1;
+            while (idx < seq.Count)
+            {
+                var pathOfLvl2 = new List<string>();
+                string childVal = "null";
+                string childPath;
+                TreeNode childNode;
+                foreach (var parentPath in pathOfLvl)
+                {
+                    if (idx >= seq.Count)
+                    {
+                        break;
+                    }
+                    childVal = seq[idx++];
+                    if (childVal != "null")
+                    {
+                        childPath = string.Format("{0}L", parentPath);
+                        pathOfLvl2.Add(childPath);
+                        childNode = new TreeNode(int.Parse(childVal));
+                        pathDict[parentPath].left = childNode;
+                        pathDict[childPath] = childNode;
+                    }
+                    if (idx >= seq.Count)
+                    {
+                        break;
+                    }
+                    childVal = seq[idx++];
+                    if (childVal != "null")
+                    {
+                        childPath = string.Format("{0}R", parentPath);
+                        pathOfLvl2.Add(childPath);
+                        childNode = new TreeNode(int.Parse(childVal));
+                        pathDict[parentPath].right = childNode;
+                        pathDict[childPath] = childNode;
+                    }
+                }
+                pathOfLvl = pathOfLvl2;
+            }
+            return root;
+        }
         public static TreeNode FromStr(string s)
         {
             var seq = s.Trim().TrimStart('[').TrimEnd(']')
                         .Split(',')
-                        .Select(i => i.Trim());
-            return FromDLRSeq(seq);
+                        .Select(i => i.Trim()).ToList();
+            return FromStrByLevel(seq);
         }
         public override string ToString()
         {
@@ -225,18 +319,124 @@ namespace Util
             // Console.WriteLine(n);
             return ToStr();
         }
+        static Dictionary<string, TreeNode> PathByLevel(TreeNode root)
+        {
+            var pathDict = new Dictionary<string, TreeNode>();
+            if (root == null)
+            {
+                return pathDict;
+            }
+            var node = root;
+            pathDict[""] = root;
+            var pathOfLvl = new List<string> { "" };
+            // var pathOfAll = new List<List<string>>();
+            // pathOfAll.Add(pathOfLvl);
+
+            while (true)
+            {
+                var pathOfLvl2 = new List<string>();
+                int nodeOflvl = 0;
+                foreach (var parentPath in pathOfLvl)
+                {
+                    node = pathDict[parentPath];
+                    if (node.left != null)
+                    {
+                        var p = $"{parentPath}L";
+                        pathDict[p] = node.left;
+                        pathOfLvl2.Add(p);
+                        nodeOflvl++;
+                    }
+                    if (node.right != null)
+                    {
+                        var p = $"{parentPath}R";
+                        pathDict[p] = node.right;
+                        pathOfLvl2.Add(p);
+                        nodeOflvl++;
+                    }
+                }
+                if (nodeOflvl == 0)
+                    break;
+                pathOfLvl = pathOfLvl2;
+                // pathOfAll.Add(pathOfLvl);
+            }
+
+            // var lst = new List<string>();
+            // foreach (var lvl in pathOfAll)
+            // {
+            //     // Console.WriteLine(string.Join(" - ", lvl.Select(i => pathDict[i].val)));
+            //     lst.Add(string.Join(" - ", lvl.Select(i => string.Format("{0}{1}", i.EndsWith("L") ? "/" : "\\", pathDict[i].val))));
+            // }
+            // return string.Join('\n', lst);
+            return pathDict;
+        }
+        public string ToStrByLevel(bool ignoreVal = false)
+        {
+            var res = new List<string>();
+            var pathDict = PathByLevel(this);
+
+            var placeHolder = "1";
+            void AddVal(TreeNode n)
+            {
+                var val = ignoreVal ? placeHolder : $"{n.val}";
+                res.Add(val);
+            }
+            AddVal(pathDict[""]);
+
+            var pathOfLvl = new List<string> { "" };
+            while (true)
+            {
+                var pathOfLvl2 = new List<string>();
+                int nodeOflvl = 0;
+                foreach (var parentPath in pathOfLvl)
+                {
+                    var node = pathDict[parentPath];
+                    if (node.left != null)
+                    {
+                        var p = $"{parentPath}L";
+                        pathDict[p] = node.left;
+                        pathOfLvl2.Add(p);
+                        AddVal(node.left);
+                        nodeOflvl++;
+                    }
+                    else
+                    {
+                        res.Add("null");
+                    }
+
+                    if (node.right != null)
+                    {
+                        var p = $"{parentPath}R";
+                        pathDict[p] = node.right;
+                        pathOfLvl2.Add(p);
+                        AddVal(node.right);
+                        nodeOflvl++;
+                    }
+                    else
+                    {
+                        res.Add("null");
+                    }
+                }
+                if (nodeOflvl == 0)
+                    break;
+                pathOfLvl = pathOfLvl2;
+            }
+            // remove extra nulls in tail
+            while (res.Last() == "null")
+            {
+                res.RemoveAt(res.Count - 1);
+            }
+            return string.Format("[{0}]", string.Join(',', res));
+        }
         public string ToStr(int leafSpaceN = 3, int branchSpaceN = 1, bool ignoreX = false)
         {
             string X = "x";
-            string Null = "u";
-            var path = DLRPath(this);
+            var path = PathByLevel(this);
             var level = path.Keys.Select(i => i.Length).Max();
 
             var leafSpace = " ".Repeat(leafSpaceN);
             var branchSpace = " ".Repeat(branchSpaceN);
             var leafN = (int)Math.Pow(2, level);
             var maxLen = leafN / 2 * (leafSpaceN + 2) + (leafN / 2 - 1) * branchSpaceN;
-            // Console.WriteLine($"maxLen: {maxLen}");
 
             var pathListEachLvl = new List<List<string>>();
             pathListEachLvl.Add(new List<string> { "" });
@@ -257,8 +457,7 @@ namespace Util
                     string v = X;
                     if (path.ContainsKey(p))
                     {
-                        if (path[p] == "null") v = Null;
-                        else v = path[p];
+                        v = $"{path[p].val}";
                     }
                     yield return v;
                 }
@@ -293,6 +492,14 @@ namespace Util
                 colIdxListEachLvl.Add(colIdxList);
             }
 
+            if (ignoreX)
+            {
+                var extraSpaceN = colIdxListEachLvl.Select(i => i.Where(j => j.val != X).First().idx).Min();
+                // colIdxListEachLvl.ForEach(i => Console.WriteLine(string.Join("|", i.Select(j => string.Format("{1},{0}", j.val, j.idx)))));
+                // Console.WriteLine($"extraSpaceN {extraSpaceN}");
+                colIdxListEachLvl = colIdxListEachLvl.Select(i => i.Select(j => (j.val, j.idx - extraSpaceN)).ToList()).ToList();
+                // colIdxListEachLvl.ForEach(i => Console.WriteLine(string.Join("|", i.Select(j => string.Format("{1},{0}", j.val, j.idx)))));
+            }
             var colIdxListEachLine = new List<List<(string val, int idx)>>();
             foreach (var lvl in colIdxListEachLvl.SkipLast(1))
             {
@@ -335,27 +542,27 @@ namespace Util
 
             return string.Join("\n", ss);
         }
-        public static Dictionary<string, string> DLRPath(TreeNode tn, Dictionary<string, string> res = null, string path = "")
+        public static Dictionary<string, string> DLRPath(TreeNode tn, Dictionary<string, string> pathDict = null, string path = "")
         {
-            if (res == null)
+            if (pathDict == null)
             {
-                res = new Dictionary<string, string>();
+                pathDict = new Dictionary<string, string>();
             }
             if (tn != null)
             {
-                // res.Add($"{tn.val}|{path}");
-                res[path] = $"{tn.val}";
-                if ((tn.left != null) ||
-                    ((tn.left == null) && (tn.right != null)))
-                    DLRPath(tn.left, res, $"{path}L");
-                if (tn.right != null) DLRPath(tn.right, res, path + $"{path}R");
+                pathDict[path] = $"{tn.val}";
+                // if ((tn.left != null) ||
+                //     ((tn.left == null) && (tn.right != null)))
+                //     DLRPath(tn.left, res, $"{path}L");
+                // if (tn.right != null) DLRPath(tn.right, res, path + $"{path}R");
+                if (tn.left != null) DLRPath(tn.left, pathDict, $"{path}L");
+                if (tn.right != null) DLRPath(tn.right, pathDict, $"{path}R");
             }
             else
             {
-                // res.Add($"null|{path}");
-                res[path] = "null";
+                pathDict[path] = "null";
             }
-            return res;
+            return pathDict;
         }
         public static List<string> DLRWithLevel(TreeNode tn, List<string> res = null, int level = 0)
         {
@@ -518,6 +725,22 @@ namespace Util
         {
             return string.Format("[{0}]", string.Join(',', a.Select(i => $"\"{i}\"")));
         }
+        public static T[] JsonToArray1d<T>(this string s, Func<string, T> converter)
+        {
+            s = s.Trim();
+            if ((s[0] != '[') || (s[s.Length - 1] != ']'))
+            {
+                throw new ArgumentException("string should be started with '[' and end with ']'", "s");
+            }
+            s = s.Substring(1, s.Length - 2);
+            return s.Split(',')
+                    .Select(y => converter(y))
+                    .ToArray();
+        }
+        public static string Array1dToJson<T>(this T[] a)
+        {
+            return string.Format("[{0}]", string.Join(',', a));
+        }
         public static int[] JsonToInt1d(this string s)
         {
             return s.TrimStart('[').TrimEnd(']')
@@ -539,6 +762,30 @@ namespace Util
         public static string IListIntToJson(this IList<int> a)
         {
             return string.Format("[{0}]", string.Join(',', a));
+        }
+        public static T[][] JsonToArray2d<T>(this string s, Func<string, T> converter)
+        {
+            s = s.Trim();
+            if ((s[0] != '[') || (s[s.Length - 1] != ']'))
+            {
+                throw new ArgumentException("string should be started with '[' and end with ']'", "s");
+            }
+            s = s.Substring(1, s.Length - 2);
+            s = s.TrimStart(new char[] { '[', ' ' }).TrimEnd(new char[] { ']', ' ' });
+            // Console.WriteLine($"remove []: {s}");
+            return s.Split("],")
+                    .Select(x =>
+                        x.TrimStart(new char[] { '[', ' ' })
+                        .Split(',')
+                        // .Where(z => z.Length > 0)
+                        .Select(y => converter(y))
+                        .ToArray())
+                    .ToArray();
+        }
+        public static string Array2dToJson<T>(this T[][] a)
+        {
+            return string.Format("[{0}]", string.Join(",", a.Select(x =>
+                        string.Format("[{0}]", string.Join(',', x)))));
         }
         public static int[][] JsonToInt2d(this string s)
         {
@@ -626,6 +873,12 @@ namespace Util
         {
             return a.Select(i => i.OrderBy(j => j).ToArray()).OrderBy(k => string.Join(',', k)).ToArray();
         }
+        public static IList<TreeNode> Sorted(this IList<TreeNode> a)
+        {
+            return a.OrderBy(k => k.ToStrByLevel(ignoreVal: true))
+                    .Select(i => i.ToStrByLevel(ignoreVal: true).JsonToTreeNode())
+                    .ToArray();
+        }
         public static char[][] JsonToChar2d(this string s, char quote = '\'')
         {
             return s.TrimStart(new char[] { '[', ' ' }).TrimEnd(new char[] { ']', ' ' })
@@ -662,6 +915,18 @@ namespace Util
         public static string TreeNodeToJson(this TreeNode tn)
         {
             return tn.ToString();
+        }
+        public static IList<TreeNode> JsonToIListTreeNode(this string s)
+        {
+            var ss = s.JsonToArray2d(i => i);
+            // foreach (var i in ss)
+            //     Console.WriteLine(i.Array1dToJson());
+            return ss.Select(i => TreeNode.FromStr(i.Array1dToJson())).ToList();
+        }
+        public static string IListTreeNodeToJson(this IList<TreeNode> lst)
+        {
+            var ss = lst.Select(i => i.ToString());
+            return string.Format("[ {0} ]", string.Join(", ", ss));
         }
     }
     public class Timeit : IDisposable
@@ -721,6 +986,10 @@ namespace Util
             else if (t == typeof(TreeNode))
             {
                 f = x => x.JsonToTreeNode();
+            }
+            else if (t == typeof(IList<TreeNode>))
+            {
+                f = x => x.JsonToIListTreeNode();
             }
             else if (t == typeof(bool))
             {
