@@ -520,7 +520,8 @@ namespace Util
             var ss = new List<string>();
             foreach (var lvl in colIdxListEachLine)
             {
-                var s = new char[lvl.Last().idx + 1];
+                // val may more than 1 digit, preserve double spaces
+                var s = new char[(lvl.Last().idx + 1) * 2];
                 for (int i = 0; i < s.Length; i++)
                 {
                     s[i] = ' ';
