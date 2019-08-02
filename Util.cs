@@ -255,6 +255,9 @@ namespace Util
             {
                 return null;
             }
+            if (seq.First().Trim() == "")
+                return null;
+
             var root = new TreeNode(int.Parse(seq.First()));
             var pathDict = new Dictionary<string, TreeNode>();
             pathDict[""] = root;
@@ -807,6 +810,9 @@ namespace Util
         }
         public static IList<IList<int>> JsonToIListIListInt(this string s)
         {
+            if (s.Trim().Replace(" ", "") == "[]")
+                return new List<IList<int>>();
+
             var lst = s.TrimStart(new char[] { '[', ' ' }).TrimEnd(new char[] { ']', ' ' })
                     .Split("],")
                     .Select(x =>

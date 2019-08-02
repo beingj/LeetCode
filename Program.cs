@@ -108,7 +108,11 @@ namespace LeetCode
             // InterleavingString.Test.Run();
             // ValidateBinarySearchTree.Test.Run();
             // RecoverBinarySearchTree.Test.Run();
-            SameTree.Test.Run();
+            // SameTree.Test.Run();
+            // SymmetricTree.Test.Run();
+            // BinaryTreeLevelOrderTraversal.Test.Run();
+            // BinaryTreeZigzagLevelOrderTraversal.Test.Run();
+            MaximumDepthOfBinaryTree.Test.Run();
         }
     }
 
