@@ -106,7 +106,9 @@ namespace LeetCode
             // UniqueBinarySearchTreesII.Test.Run();
             // UniqueBinarySearchTrees.Test.Run();
             // InterleavingString.Test.Run();
-            ValidateBinarySearchTree.Test.Run();
+            // ValidateBinarySearchTree.Test.Run();
+            // RecoverBinarySearchTree.Test.Run();
+            SameTree.Test.Run();
         }
     }
 
