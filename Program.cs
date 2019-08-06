@@ -122,7 +122,8 @@ namespace LeetCode
             // MinimumDepthOfBinaryTree.Test.Run();
             // PathSum.Test.Run();
             // PathSumII.Test.Run();
-            FlattenBinaryTreeToLinkedList.Test.Run();
+            // FlattenBinaryTreeToLinkedList.Test.Run();
+            DistinctSubsequences.Test.Run();
         }
     }
 
