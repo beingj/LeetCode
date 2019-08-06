@@ -118,7 +118,11 @@ namespace LeetCode
             // BinaryTreeLevelOrderTraversalII.Test.Run();
             // ConvertSortedArrayToBinarySearchTree.Test.Run();
             // ConvertSortedListToBinarySearchTree.Test.Run();
-            BalancedBinaryTree.Test.Run();
+            // BalancedBinaryTree.Test.Run();
+            // MinimumDepthOfBinaryTree.Test.Run();
+            // PathSum.Test.Run();
+            // PathSumII.Test.Run();
+            FlattenBinaryTreeToLinkedList.Test.Run();
         }
     }
 
