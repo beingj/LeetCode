@@ -112,7 +112,13 @@ namespace LeetCode
             // SymmetricTree.Test.Run();
             // BinaryTreeLevelOrderTraversal.Test.Run();
             // BinaryTreeZigzagLevelOrderTraversal.Test.Run();
-            MaximumDepthOfBinaryTree.Test.Run();
+            // MaximumDepthOfBinaryTree.Test.Run();
+            // ConstructBinaryTreeFromPreorderAndInorderTraversal.Test.Run();
+            // ConstructBinaryTreeFromInorderAndPostorderTraversal.Test.Run();
+            // BinaryTreeLevelOrderTraversalII.Test.Run();
+            // ConvertSortedArrayToBinarySearchTree.Test.Run();
+            // ConvertSortedListToBinarySearchTree.Test.Run();
+            BalancedBinaryTree.Test.Run();
         }
     }
 
