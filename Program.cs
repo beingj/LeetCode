@@ -123,7 +123,11 @@ namespace LeetCode
             // PathSum.Test.Run();
             // PathSumII.Test.Run();
             // FlattenBinaryTreeToLinkedList.Test.Run();
-            DistinctSubsequences.Test.Run();
+            // DistinctSubsequences.Test.Run();
+            // PopulatingNextRightPointersInEachNode.Test.Run();
+            // PopulatingNextRightPointersInEachNodeII.Test.Run();
+            // PascalsTriangle.Test.Run();
+            PascalsTriangleII.Test.Run();
         }
     }
 

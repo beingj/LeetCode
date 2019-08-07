@@ -44,6 +44,7 @@ namespace DistinctSubsequences
     }
     public class Test
     {
+        // index version is even slower(4x) than substring version
         // int MyNumDistinct2(string s, string t, int sIdx, int tIdx)
         // {
         //     if ((t.Length - tIdx) == 1)
@@ -57,42 +58,6 @@ namespace DistinctSubsequences
         //         if (sIdx < 0) break;
         //         sum += MyNumDistinct2(s, t, sIdx + 1, tIdx + 1);
         //         sIdx++;
-        //     }
-        //     return sum;
-        // }
-        // int MyNum1(string s, string t, string t0)
-        // {
-        //     if (t.Length == 1)
-        //     {
-        //         // return s.Where(i => i == t[0]).Count();
-        //         return s.Contains(t) ? 1 : 0;
-        //         // var idx = s.IndexOf(t[0]);
-        //         // if (idx < 0)
-        //         // {
-        //         //     return 0;
-        //         // }
-        //         // else
-        //         // {
-        //         //     s = s.Substring(idx + 1);
-        //         //     if (s.Length < t0.Length)
-        //         //     {
-        //         //         return 1;
-        //         //     }
-        //         //     else
-        //         //     {
-        //         //         // start search again with remain s
-        //         //         return 1 + MyNum(s, t0, t0);
-        //         //     }
-        //         // }
-        //     }
-        //     var sum = 0;
-        //     var tIdx = 0;
-        //     for (var sIdx = 0; sIdx < s.Length; sIdx++)
-        //     {
-        //         if (s[sIdx] == t[tIdx])
-        //         {
-        //             sum += MyNum1(s.Substring(sIdx + 1), t.Substring(tIdx + 1), t0);
-        //         }
         //     }
         //     return sum;
         // }
