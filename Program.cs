@@ -127,7 +127,11 @@ namespace LeetCode
             // PopulatingNextRightPointersInEachNode.Test.Run();
             // PopulatingNextRightPointersInEachNodeII.Test.Run();
             // PascalsTriangle.Test.Run();
-            PascalsTriangleII.Test.Run();
+            // PascalsTriangleII.Test.Run();
+            // Triangle.Test.Run();
+            // BestTimeToBuyAndSellStock.Test.Run();
+            // BestTimeToBuyAndSellStockII.Test.Run();
+            BestTimeToBuyAndSellStockIII.Test.Run();
         }
     }
 
