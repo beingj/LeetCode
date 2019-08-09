@@ -98,8 +98,7 @@ namespace Util
             // object o) 但不重写 Object.GetHashCode()
 
             // https://docs.microsoft.com/en-us/dotnet/api/system.object.gethashcode?view=netframework-4.8
-            // return this.ToString().GetHashCode();
-            return this.GetHashCode();
+            return this.ToString().GetHashCode();
         }
     }
     public class TreeNode
@@ -608,8 +607,7 @@ namespace Util
             // object o) 但不重写 Object.GetHashCode()
 
             // https://docs.microsoft.com/en-us/dotnet/api/system.object.gethashcode?view=netframework-4.8
-            // return this.ToString().GetHashCode();
-            return this.GetHashCode();
+            return this.ToString().GetHashCode();
         }
         public static void TestTreeNode()
         {
@@ -886,8 +884,7 @@ namespace Util
             // object o) 但不重写 Object.GetHashCode()
 
             // https://docs.microsoft.com/en-us/dotnet/api/system.object.gethashcode?view=netframework-4.8
-            // return this.ToString().GetHashCode();
-            return this.GetHashCode();
+            return this.ToString().GetHashCode();
         }
     }
     static class Ext
