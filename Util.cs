@@ -970,6 +970,29 @@ namespace Util
         {
             return string.Format("[{0}]", string.Join(',', a.Select(i => $"\"{i}\"")));
         }
+        public static IList<IList<string>> JsonToIListIListStr(this string s)
+        {
+            if (s.Trim().Replace(" ", "") == "[]")
+                return new List<IList<string>>();
+
+            var lst = s.TrimStart(new char[] { '[', ' ' }).TrimEnd(new char[] { ']', ' ' })
+                    .Split("],")
+                    .Select(x =>
+                                x.TrimStart(new char[] { '[', ' ' }).TrimEnd(new char[] { ']', ' ' })
+                                .Split(',')
+                                .Select(y => y.TrimStart(new char[] { '"' }).TrimEnd(new char[] { '"' }))
+                                // .Where(z => z.Length > 0)
+                                .ToList())
+                    .ToList();
+            var res = new List<IList<string>>();
+            res.AddRange(lst);
+            return res;
+        }
+        public static string IListIListStrToJson(this IList<IList<string>> a)
+        {
+            return string.Format("[{0}]", string.Join(",", a.Select(x =>
+                        string.Format("[{0}]", string.Join(',', x.Select(i => $"\"{i}\""))))));
+        }
         public static T[] JsonToArray1d<T>(this string s, Func<string, T> converter)
         {
             s = s.Trim();
@@ -1226,6 +1249,10 @@ namespace Util
             else if (t == typeof(IList<string>))
             {
                 f = x => x.JsonToIListStr();
+            }
+            else if (t == typeof(IList<IList<string>>))
+            {
+                f = x => x.JsonToIListIListStr();
             }
             else if (t == typeof(ListNode))
             {

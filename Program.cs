@@ -133,7 +133,9 @@ namespace LeetCode
             // BestTimeToBuyAndSellStockII.Test.Run();
             // BestTimeToBuyAndSellStockIII.Test.Run();
             // BinaryTreeMaximumPathSum.Test.Run();
-            ValidPalindrome.Test.Run();
+            // ValidPalindrome.Test.Run();
+            // WordLadder.Test.Run();
+            WordLadderII.Test.Run();
         }
     }
 
