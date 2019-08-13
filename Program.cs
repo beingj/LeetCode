@@ -135,7 +135,8 @@ namespace LeetCode
             // BinaryTreeMaximumPathSum.Test.Run();
             // ValidPalindrome.Test.Run();
             // WordLadder.Test.Run();
-            WordLadderII.Test.Run();
+            // WordLadderII.Test.Run();
+            LongestConsecutiveSequence.Test.Run();
         }
     }
 
