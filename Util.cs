@@ -1150,7 +1150,7 @@ namespace Util
                     .Select(i => i.ToStrByLevel(ignoreVal: true).JsonToTreeNode())
                     .ToArray();
         }
-        public static char[][] JsonToChar2d(this string s, char quote = '\'')
+        public static char[][] JsonToChar2d(this string s, char quote = '\"')
         {
             return s.TrimStart(new char[] { '[', ' ' }).TrimEnd(new char[] { ']', ' ' })
                     .Split("],")

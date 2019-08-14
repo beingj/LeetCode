@@ -136,8 +136,9 @@ namespace LeetCode
             // ValidPalindrome.Test.Run();
             // WordLadder.Test.Run();
             // WordLadderII.Test.Run();
-            LongestConsecutiveSequence.Test.Run();
+            // LongestConsecutiveSequence.Test.Run();
+            // SumRootToLeafNumbers.Test.Run();
+            SurroundedRegions.Test.Run();
         }
     }
-
 }
