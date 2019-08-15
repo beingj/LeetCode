@@ -138,7 +138,9 @@ namespace LeetCode
             // WordLadderII.Test.Run();
             // LongestConsecutiveSequence.Test.Run();
             // SumRootToLeafNumbers.Test.Run();
-            SurroundedRegions.Test.Run();
+            // SurroundedRegions.Test.Run();
+            // PalindromePartitioning.Test.Run();
+            PalindromePartitioningII.Test.Run();
         }
     }
 }
