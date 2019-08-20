@@ -140,7 +140,8 @@ namespace LeetCode
             // SumRootToLeafNumbers.Test.Run();
             // SurroundedRegions.Test.Run();
             // PalindromePartitioning.Test.Run();
-            PalindromePartitioningII.Test.Run();
+            // PalindromePartitioningII.Test.Run();
+            CloneGraph.Test.Run();
         }
     }
 }
