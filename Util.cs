@@ -955,18 +955,22 @@ namespace Util
             }
             n.neighbors = nbsSet.ToList();
         }
-        static string GraphNodeToJson(GraphNode node, Dictionary<GraphNode, int> nodeDict, ref int id)
+        static string GraphNodeToJson(GraphNode node, Dictionary<GraphNode, int> nodeDict = null)
         {
+            if (nodeDict == null)
+            {
+                nodeDict = new Dictionary<GraphNode, int>();
+            }
             if (nodeDict.ContainsKey(node))
             {
                 return $"{{\"$ref\":\"{nodeDict[node]}\"}}";
             }
+            var thisId = nodeDict.Count + 1;
+            nodeDict[node] = thisId;
             var nbs = new List<string>();
-            var thisId = id;
-            nodeDict[node] = id++;
             foreach (var i in node.neighbors)
             {
-                nbs.Add(GraphNodeToJson(i, nodeDict, ref id));
+                nbs.Add(GraphNodeToJson(i, nodeDict));
             }
             // {"$id":"1","neighbors":[],"val":10}
             var neighbors = string.Join(",", nbs);
@@ -976,9 +980,7 @@ namespace Util
         public override string ToString()
         {
             // return $"{val} [{string.Join(", ", neighbors.Select(i => i.val))}]";
-            var nodeDict = new Dictionary<GraphNode, int>();
-            var id = 1;
-            return GraphNodeToJson(this, nodeDict, ref id);
+            return GraphNodeToJson(this);
         }
         // TODO: override Equals/GetHashCode cause: Stack overflow.
         // public override bool Equals(Object obj)

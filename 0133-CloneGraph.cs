@@ -51,9 +51,9 @@ namespace CloneGraph
             foreach (var i in lines)
             {
                 var g = Node.FromJson(i);
-                // Console.WriteLine(g);
+                Console.WriteLine(g);
                 var n = sln.CloneGraph(g);
-                // Console.WriteLine(g);
+                Console.WriteLine(g);
                 Assert.Equal(g.ToString(), n.ToString());
             }
         }
