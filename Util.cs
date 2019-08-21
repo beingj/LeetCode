@@ -889,6 +889,8 @@ namespace Util
     }
     public class GraphNode
     {
+        static Random rnd = new Random();
+        int id = rnd.Next(int.MinValue, int.MaxValue);
         public int val;
         public IList<GraphNode> neighbors;
 
@@ -945,36 +947,35 @@ namespace Util
             var nbs = o["neighbors"] as JArray;
             if (nbs.Count == 0)
                 return;
-            var nbsSet = new HashSet<GraphNode>();
             foreach (var i in nbs)
             {
                 var nb = i as JObject;
                 var t = GetGraphNodeOrCreate(nb, idDict);
-                nbsSet.Add(t);
+                n.neighbors.Add(t);
                 ParseNode(nb, idDict);
             }
-            n.neighbors = nbsSet.ToList();
         }
-        static string GraphNodeToJson(GraphNode node, Dictionary<GraphNode, int> nodeDict = null)
+        static string GraphNodeToJson(GraphNode node, Dictionary<int, int> refDict = null)
         {
-            if (nodeDict == null)
+            if (refDict == null)
             {
-                nodeDict = new Dictionary<GraphNode, int>();
+                refDict = new Dictionary<int, int>();
             }
-            if (nodeDict.ContainsKey(node))
+            var k = node.id;
+            if (refDict.ContainsKey(k))
             {
-                return $"{{\"$ref\":\"{nodeDict[node]}\"}}";
+                return $"{{\"$ref\":\"{refDict[k]}\"}}";
             }
-            var thisId = nodeDict.Count + 1;
-            nodeDict[node] = thisId;
+            var refId = refDict.Count + 1;
+            refDict[k] = refId;
             var nbs = new List<string>();
             foreach (var i in node.neighbors)
             {
-                nbs.Add(GraphNodeToJson(i, nodeDict));
+                nbs.Add(GraphNodeToJson(i, refDict));
             }
             // {"$id":"1","neighbors":[],"val":10}
             var neighbors = string.Join(",", nbs);
-            var s = $"{{\"$id\":\"{thisId}\",\"neighbors\":[{neighbors}],\"val\":{node.val}}}";
+            var s = $"{{\"$id\":\"{refId}\",\"neighbors\":[{neighbors}],\"val\":{node.val}}}";
             return s;
         }
         public override string ToString()
@@ -982,27 +983,26 @@ namespace Util
             // return $"{val} [{string.Join(", ", neighbors.Select(i => i.val))}]";
             return GraphNodeToJson(this);
         }
-        // TODO: override Equals/GetHashCode cause: Stack overflow.
-        // public override bool Equals(Object obj)
-        // {
-        //     //Check for null and compare run-time types.
-        //     if ((obj == null) || !this.GetType().Equals(obj.GetType()))
-        //     {
-        //         return false;
-        //     }
-        //     else
-        //     {
-        //         return this.ToString() == ((GraphNode)obj).ToString();
-        //     }
-        // }
-        // public override int GetHashCode()
-        // {
-        //     // warning CS0659: '“ListNode”重写 Object.Equals(
-        //     // object o) 但不重写 Object.GetHashCode()
+        public override bool Equals(Object obj)
+        {
+            //Check for null and compare run-time types.
+            if ((obj == null) || !this.GetType().Equals(obj.GetType()))
+            {
+                return false;
+            }
+            else
+            {
+                return this.ToString() == ((GraphNode)obj).ToString();
+            }
+        }
+        public override int GetHashCode()
+        {
+            // warning CS0659: '“ListNode”重写 Object.Equals(
+            // object o) 但不重写 Object.GetHashCode()
 
-        //     // https://docs.microsoft.com/en-us/dotnet/api/system.object.gethashcode?view=netframework-4.8
-        //     return this.ToString().GetHashCode();
-        // }
+            // https://docs.microsoft.com/en-us/dotnet/api/system.object.gethashcode?view=netframework-4.8
+            return this.ToString().GetHashCode();
+        }
     }
     static class Ext
     {

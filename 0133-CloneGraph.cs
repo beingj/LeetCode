@@ -44,18 +44,7 @@ namespace CloneGraph
 ";
             var lines = input.CleanInput();
             lines = "0133-data.txt".InputFromFile();
-            // Verify.Method(new Solution(), lines);
-            // override Node.Equals/GetHashCode cause: Stack overflow.
-            // so compare manually
-            var sln = new Solution();
-            foreach (var i in lines)
-            {
-                var g = Node.FromJson(i);
-                Console.WriteLine(g);
-                var n = sln.CloneGraph(g);
-                Console.WriteLine(g);
-                Assert.Equal(g.ToString(), n.ToString());
-            }
+            Verify.Method(new Solution(), lines);
         }
     }
 }
