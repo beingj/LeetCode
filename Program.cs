@@ -141,8 +141,9 @@ namespace LeetCode
             // SurroundedRegions.Test.Run();
             // PalindromePartitioning.Test.Run();
             // PalindromePartitioningII.Test.Run();
-            CloneGraph.Test.Run();
+            // CloneGraph.Test.Run();
             // GasStation.Test.Run();
+            Candy.Test.Run();
         }
     }
 }
