@@ -143,7 +143,9 @@ namespace LeetCode
             // PalindromePartitioningII.Test.Run();
             // CloneGraph.Test.Run();
             // GasStation.Test.Run();
-            Candy.Test.Run();
+            // Candy.Test.Run();
+            // SingleNumber.Test.Run();
+            SingleNumberII.Test.Run();
         }
     }
 }
