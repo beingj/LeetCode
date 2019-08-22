@@ -145,7 +145,8 @@ namespace LeetCode
             // GasStation.Test.Run();
             // Candy.Test.Run();
             // SingleNumber.Test.Run();
-            SingleNumberII.Test.Run();
+            // SingleNumberII.Test.Run();
+            CopyListWithRandomPointer.Test.Run();
         }
     }
 }

@@ -1004,6 +1004,114 @@ namespace Util
             return this.ToString().GetHashCode();
         }
     }
+    public class NodeRandom
+    {
+        static Random rnd = new Random();
+        int id = rnd.Next(int.MinValue, int.MaxValue);
+        public int val;
+        public NodeRandom next;
+        public NodeRandom random;
+
+        public NodeRandom() { }
+        public NodeRandom(int _val, NodeRandom _next, NodeRandom _random)
+        {
+            val = _val;
+            next = _next;
+            random = _random;
+        }
+        public static NodeRandom FromJson(string s)
+        {
+            var idDict = new Dictionary<int, NodeRandom>();
+            return GetOrCreate(JObject.Parse(s), idDict);
+        }
+        static NodeRandom GetOrCreate(JObject nObj, Dictionary<int, NodeRandom> idDict)
+        {
+            int id = int.MinValue;
+            if (nObj.ContainsKey("$id"))
+            {
+                id = nObj["$id"].Value<int>();
+                if (idDict.ContainsKey(id))
+                {
+                    // Console.WriteLine($"already node for id: {id}");
+                }
+                else
+                {
+                    var x = new NodeRandom();
+                    x.val = nObj["val"].Value<int>();
+                    idDict[id] = x;
+                    if (nObj.ContainsKey("next"))
+                    {
+                        if (nObj["next"].Type == JTokenType.Object)
+                        {
+                            var next = GetOrCreate(nObj["next"] as JObject, idDict);
+                            x.next = next;
+                        }
+                    }
+                    if (nObj.ContainsKey("random"))
+                    {
+                        if (nObj["random"].Type == JTokenType.Object)
+                        {
+                            var random = GetOrCreate(nObj["random"] as JObject, idDict);
+                            x.random = random;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                // there must be a $ref if no $id
+                id = nObj["$ref"].Value<int>();
+                if (!idDict.ContainsKey(id))
+                {
+                    // Console.WriteLine($"no node for ref: {id}");
+                    throw new ArgumentOutOfRangeException($"no node for ref: {id}");
+                }
+            }
+            return idDict[id];
+        }
+        string ToJson(Dictionary<int, int> idDict = null)
+        {
+            if (idDict == null)
+            {
+                idDict = new Dictionary<int, int>();
+            }
+            var k = id;
+            if (idDict.ContainsKey(k))
+            {
+                return $"{{\"$ref\":\"{idDict[k]}\"}}";
+            }
+            var refId = idDict.Count + 1;
+            idDict[k] = refId;
+            var n = next == null ? "null" : next.ToJson(idDict);
+            var r = random == null ? "null" : random.ToJson(idDict);
+            var s = $"{{\"$id\":\"{refId}\",\"next\":{n},\"random\":{r},\"val\":{val}}}";
+            return s;
+        }
+        public override string ToString()
+        {
+            return ToJson();
+        }
+        public override bool Equals(Object obj)
+        {
+            //Check for null and compare run-time types.
+            if ((obj == null) || !this.GetType().Equals(obj.GetType()))
+            {
+                return false;
+            }
+            else
+            {
+                return this.ToString() == ((NodeRandom)obj).ToString();
+            }
+        }
+        public override int GetHashCode()
+        {
+            // warning CS0659: '“ListNode”重写 Object.Equals(
+            // object o) 但不重写 Object.GetHashCode()
+
+            // https://docs.microsoft.com/en-us/dotnet/api/system.object.gethashcode?view=netframework-4.8
+            return this.ToString().GetHashCode();
+        }
+    }
     static class Ext
     {
         public static string Repeat(this string s, int n)
@@ -1324,6 +1432,14 @@ namespace Util
         {
             return gn.ToString();
         }
+        public static NodeRandom JsonToNodeRandom(this string s)
+        {
+            return NodeRandom.FromJson(s);
+        }
+        public static string NodeRandomToJson(this NodeRandom n)
+        {
+            return n.ToString();
+        }
     }
     public class Timeit : IDisposable
     {
@@ -1394,6 +1510,10 @@ namespace Util
             else if (t == typeof(GraphNode))
             {
                 f = x => x.JsonToGraphNode();
+            }
+            else if (t == typeof(NodeRandom))
+            {
+                f = x => x.JsonToNodeRandom();
             }
             else if (t == typeof(bool))
             {
