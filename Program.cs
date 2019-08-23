@@ -148,7 +148,9 @@ namespace LeetCode
             // SingleNumberII.Test.Run();
             // CopyListWithRandomPointer.Test.Run();
             // WordBreak.Test.Run();
-            WordBreakII.Test.Run();
+            // WordBreakII.Test.Run();
+            // LinkedListCycle.Test.Run();
+            LinkedListCycleII.Test.Run();
         }
     }
 }

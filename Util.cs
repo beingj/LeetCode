@@ -15,6 +15,8 @@ namespace Util
     // Definition for singly-linked list.
     public class ListNode
     {
+        static Random rnd = new Random();
+        int id = rnd.Next(int.MinValue, int.MaxValue);
         public int val;
         public ListNode next;
         public ListNode(int x) { val = x; }
@@ -45,14 +47,22 @@ namespace Util
         public override string ToString()
         {
             List<int> s = new List<int>();
-            ListNode node = this;
-            while (true)
+            var node = this;
+            var ids = new List<int>();
+            var pos = -1;
+            while (node != null)
             {
+                pos = ids.IndexOf(node.id);
+                if (pos > -1)
+                    break;
                 s.Add(node.val);
-                if (node.next == null) break;
+                ids.Add(node.id);
                 node = node.next;
             }
-            return string.Join(',', s);
+            if (pos < 0)
+                return string.Join(',', s);
+            else
+                return string.Format("{0}->{1}", string.Join(',', s), pos);
         }
         public string ToInt()
         {
