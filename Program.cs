@@ -146,7 +146,9 @@ namespace LeetCode
             // Candy.Test.Run();
             // SingleNumber.Test.Run();
             // SingleNumberII.Test.Run();
-            CopyListWithRandomPointer.Test.Run();
+            // CopyListWithRandomPointer.Test.Run();
+            // WordBreak.Test.Run();
+            WordBreakII.Test.Run();
         }
     }
 }
