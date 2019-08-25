@@ -150,7 +150,8 @@ namespace LeetCode
             // WordBreak.Test.Run();
             // WordBreakII.Test.Run();
             // LinkedListCycle.Test.Run();
-            LinkedListCycleII.Test.Run();
+            // LinkedListCycleII.Test.Run();
+            MaxPointsOnALine.Test.Run();
         }
     }
 }
