@@ -1257,6 +1257,7 @@ namespace Util
         }
         public static IList<int> JsonToIListInt(this string s)
         {
+            if (!s.Contains(',')) return new List<int>();
             return s.TrimStart('[').TrimEnd(']')
                     .Split(',')
                     .Select(y => int.Parse(y))

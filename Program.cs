@@ -151,7 +151,10 @@ namespace LeetCode
             // WordBreakII.Test.Run();
             // LinkedListCycle.Test.Run();
             // LinkedListCycleII.Test.Run();
-            MaxPointsOnALine.Test.Run();
+            // MaxPointsOnALine.Test.Run();
+            // ReorderList.Test.Run();
+            // BinaryTreePreorderTraversal.Test.Run();
+            BinaryTreePostorderTraversal.Test.Run();
         }
     }
 }
