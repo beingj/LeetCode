@@ -1267,6 +1267,23 @@ namespace Util
         {
             return string.Format("[{0}]", string.Join(',', a));
         }
+        public static IList<int?> JsonToIListNullableInt(this string s)
+        {
+            if (!s.Contains(',')) return new List<int?>();
+            return s.TrimStart('[').TrimEnd(']')
+                    .Split(',')
+                    .Select(y =>
+                    {
+                        int? x = null;
+                        if (y != "null") x = int.Parse(y);
+                        return x;
+                    })
+                    .ToList();
+        }
+        public static string IListNullableIntToJson(this IList<int?> a)
+        {
+            return string.Format("[{0}]", string.Join(',', a.Select(i => i == null ? "null" : i.ToString())));
+        }
         public static T[][] JsonToArray2d<T>(this string s, Func<string, T> converter)
         {
             s = s.Trim();
@@ -1545,6 +1562,10 @@ namespace Util
             else if (t == typeof(IList<int>))
             {
                 f = x => x.JsonToIListInt();
+            }
+            else if (t == typeof(IList<int?>))
+            {
+                f = x => x.JsonToIListNullableInt();
             }
             else if (t == typeof(IList<IList<int>>))
             {

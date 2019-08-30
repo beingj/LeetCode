@@ -154,7 +154,8 @@ namespace LeetCode
             // MaxPointsOnALine.Test.Run();
             // ReorderList.Test.Run();
             // BinaryTreePreorderTraversal.Test.Run();
-            BinaryTreePostorderTraversal.Test.Run();
+            // BinaryTreePostorderTraversal.Test.Run();
+            LRUCache.Test.Run();
         }
     }
 }
