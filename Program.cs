@@ -157,7 +157,9 @@ namespace LeetCode
             // BinaryTreePostorderTraversal.Test.Run();
             // LRUCache.Test.Run();
             // InsertionSortList.Test.Run();
-            SortList.Test.Run();
+            // SortList.Test.Run();
+            // EvaluateReversePolishNotation.Test.Run();
+            ReverseWordsInAString.Test.Run();
         }
     }
 }
