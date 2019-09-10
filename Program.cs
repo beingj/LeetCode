@@ -160,7 +160,9 @@ namespace LeetCode
             // SortList.Test.Run();
             // EvaluateReversePolishNotation.Test.Run();
             // ReverseWordsInAString.Test.Run();
-            MaximumProductSubarray.Test.Run();
+            // MaximumProductSubarray.Test.Run();
+            // FindMinimumInRotatedSortedArray.Test.Run();
+            FindMinimumInRotatedSortedArrayII.Test.Run();
         }
     }
 }
