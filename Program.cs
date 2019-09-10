@@ -159,7 +159,8 @@ namespace LeetCode
             // InsertionSortList.Test.Run();
             // SortList.Test.Run();
             // EvaluateReversePolishNotation.Test.Run();
-            ReverseWordsInAString.Test.Run();
+            // ReverseWordsInAString.Test.Run();
+            MaximumProductSubarray.Test.Run();
         }
     }
 }
