@@ -162,7 +162,8 @@ namespace LeetCode
             // ReverseWordsInAString.Test.Run();
             // MaximumProductSubarray.Test.Run();
             // FindMinimumInRotatedSortedArray.Test.Run();
-            FindMinimumInRotatedSortedArrayII.Test.Run();
+            // FindMinimumInRotatedSortedArrayII.Test.Run();
+            MinStack.Test.Run();
         }
     }
 }
