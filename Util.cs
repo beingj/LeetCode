@@ -1133,6 +1133,12 @@ namespace Util
             }
             return sb.ToString();
         }
+        public static string ToCap(this string str)
+        {
+            if (string.IsNullOrEmpty(str))
+                return string.Empty;
+            return char.ToUpper(str[0]) + str.Substring(1);
+        }
         public static string P(this int[] nums, string sep = ",")
         {
             return string.Join(sep, nums);
@@ -1767,6 +1773,119 @@ namespace Util
                     }
                     Assert.Equal(checkParaExpV, checkPara);
                 }
+            }
+        }
+        public static void Method2(dynamic obj, MethodInfo method, string[] inputStrs, bool sortRet = false)
+        {
+            var inputTypes = Util.Method.GetParametersAndReturnTypes(method);
+            var signature = string.Format("{0}.{1}({2}) => {3}",
+                            obj.GetType().Name,
+                            method.Name,
+                            string.Join(", ", inputTypes.SkipLast(1)),
+                            inputTypes.Last());
+            Console.WriteLine(signature);
+
+            Type retExpType = inputTypes.Last();
+            bool retVoid = false;
+            if (retExpType == typeof(void))
+            {
+                retVoid = true;
+                inputTypes.RemoveAt(inputTypes.Count - 1);
+            }
+
+            var inputParser = new InputConverterList(inputTypes);
+            var maxChars = 100;
+            var maxCharsEach = maxChars;
+            if (inputTypes.Count > 0)
+            {
+                maxCharsEach = maxChars / inputTypes.Count;
+            }
+
+            string allParaS = null, retExpS = null;
+            var ss = new List<string>();
+            var vs = new List<dynamic>();
+            var idx = 0;
+            foreach (var p in inputParser)
+            {
+                var s = inputStrs[idx++];
+                ss.Add(s.Substring(0, Math.Min(s.Length, maxCharsEach)));
+                dynamic tv = p.converter(s);
+                vs.Add(tv);
+            }
+
+            if (retVoid)
+            {
+                retExpS = "null";
+                allParaS = string.Join(" | ", ss);
+            }
+            else
+            {
+                retExpS = ss.Last();
+                allParaS = string.Join(" | ", ss.SkipLast(1));
+            }
+
+            if (allParaS == "")
+            {
+                allParaS = "null";
+            }
+            Console.WriteLine(string.Format("{0,-50} => {1}", allParaS, retExpS));
+
+            dynamic ret = null;
+            if (retVoid)
+            {
+                using (new Timeit())
+                {
+                    method.Invoke(obj, vs.ToArray());
+                }
+            }
+            else
+            {
+                using (new Timeit())
+                {
+                    ret = method.Invoke(obj, vs.SkipLast(1).ToArray());
+                }
+                var exp = vs.Last();
+                if (sortRet)
+                {
+                    // https://stackoverflow.com/questions/28701867/checking-if-type-or-instance-implements-ienumerable-regardless-of-type-t/28701974#28701974
+                    var isIEnumerable = typeof(IEnumerable).IsAssignableFrom(exp.GetType());
+                    if (!isIEnumerable)
+                    {
+                        throw new ArgumentException("sortRet should not be set to true when return type is not IEnumerable", "sortRet");
+                    }
+                    ret = Ext.Sorted(ret);
+                    exp = Ext.Sorted(exp);
+                }
+                Assert.Equal(exp, ret);
+            }
+        }
+        public static void NestedClass(Type t, string[] lines, bool sortRet = false)
+        {
+            for (var i = 0; i < lines.Length; i += 3)
+            {
+                var op = lines[i].JsonToIListStr();
+                var para = lines[i + 1].JsonToIListIListInt();
+                var exp = lines[i + 2].JsonToIListNullableInt();
+                dynamic obj = null;
+                for (var idx = 0; idx < para.Count; idx++)
+                {
+                    if (op[idx] == t.Name)
+                    {
+                        obj = Activator.CreateInstance(t, args: para[idx].Select(i => (object)i).ToArray(), activationAttributes: null);
+                        Console.WriteLine($"new {t.Name}({string.Join(", ", para[idx])})");
+                    }
+                    else
+                    {
+                        var m = t.GetMethod(op[idx].ToCap());
+                        var x = para[idx].Select(i => i.ToString()).ToList();
+                        if (exp[idx] != null)
+                        {
+                            x.Add(exp[idx].ToString());
+                        }
+                        Method2(obj, m, x.ToArray(), sortRet);
+                    }
+                }
+                Console.WriteLine("----");
             }
         }
         public static void Function(string inputToString, Func<dynamic> func, dynamic exp)

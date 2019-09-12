@@ -155,7 +155,7 @@ namespace LeetCode
             // ReorderList.Test.Run();
             // BinaryTreePreorderTraversal.Test.Run();
             // BinaryTreePostorderTraversal.Test.Run();
-            // LRUCache.Test.Run();
+            LRUCache.Test.Run();
             // InsertionSortList.Test.Run();
             // SortList.Test.Run();
             // EvaluateReversePolishNotation.Test.Run();
