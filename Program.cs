@@ -164,7 +164,9 @@ namespace LeetCode
             // FindMinimumInRotatedSortedArray.Test.Run();
             // FindMinimumInRotatedSortedArrayII.Test.Run();
             // MinStack.Test.Run();
-            IntersectionOfTwoLinkedLists.Test.Run();
+            // IntersectionOfTwoLinkedLists.Test.Run();
+            // MaximumGap.Test.Run();
+            CompareVersionNumbers.Test.Run();
         }
     }
 }
