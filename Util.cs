@@ -108,11 +108,14 @@ namespace Util
             // object o) 但不重写 Object.GetHashCode()
 
             // https://docs.microsoft.com/en-us/dotnet/api/system.object.gethashcode?view=netframework-4.8
-            return this.ToString().GetHashCode();
+            // return this.ToString().GetHashCode();
+            return id;
         }
     }
     public class TreeNode
     {
+        static Random rnd = new Random();
+        int id = rnd.Next(int.MinValue, int.MaxValue);
         public int val;
         public TreeNode left;
         public TreeNode right;
@@ -617,7 +620,8 @@ namespace Util
             // object o) 但不重写 Object.GetHashCode()
 
             // https://docs.microsoft.com/en-us/dotnet/api/system.object.gethashcode?view=netframework-4.8
-            return this.ToString().GetHashCode();
+            // return this.ToString().GetHashCode();
+            return id;
         }
         public static void TestTreeNode()
         {
@@ -658,6 +662,8 @@ namespace Util
     }
     public class Node
     {
+        static Random rnd = new Random();
+        int id = rnd.Next(int.MinValue, int.MaxValue);
         public int val;
         public Node left;
         public Node right;
@@ -894,7 +900,8 @@ namespace Util
             // object o) 但不重写 Object.GetHashCode()
 
             // https://docs.microsoft.com/en-us/dotnet/api/system.object.gethashcode?view=netframework-4.8
-            return this.ToString().GetHashCode();
+            // return this.ToString().GetHashCode();
+            return id;
         }
     }
     public class GraphNode
@@ -1011,7 +1018,8 @@ namespace Util
             // object o) 但不重写 Object.GetHashCode()
 
             // https://docs.microsoft.com/en-us/dotnet/api/system.object.gethashcode?view=netframework-4.8
-            return this.ToString().GetHashCode();
+            // return this.ToString().GetHashCode();
+            return id;
         }
     }
     public class NodeRandom
@@ -1119,7 +1127,8 @@ namespace Util
             // object o) 但不重写 Object.GetHashCode()
 
             // https://docs.microsoft.com/en-us/dotnet/api/system.object.gethashcode?view=netframework-4.8
-            return this.ToString().GetHashCode();
+            // return this.ToString().GetHashCode();
+            return id;
         }
     }
     static class Ext
@@ -1676,7 +1685,7 @@ namespace Util
             }
 
             var inputParser = new InputConverterList(inputTypes);
-            var maxChars = 100;
+            var maxChars = 200;
             var maxCharsEach = maxChars / inputTypes.Count;
 
             dynamic checkPara = null, checkParaExpV = null;

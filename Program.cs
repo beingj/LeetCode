@@ -155,7 +155,7 @@ namespace LeetCode
             // ReorderList.Test.Run();
             // BinaryTreePreorderTraversal.Test.Run();
             // BinaryTreePostorderTraversal.Test.Run();
-            LRUCache.Test.Run();
+            // LRUCache.Test.Run();
             // InsertionSortList.Test.Run();
             // SortList.Test.Run();
             // EvaluateReversePolishNotation.Test.Run();
@@ -163,7 +163,8 @@ namespace LeetCode
             // MaximumProductSubarray.Test.Run();
             // FindMinimumInRotatedSortedArray.Test.Run();
             // FindMinimumInRotatedSortedArrayII.Test.Run();
-            MinStack.Test.Run();
+            // MinStack.Test.Run();
+            IntersectionOfTwoLinkedLists.Test.Run();
         }
     }
 }
