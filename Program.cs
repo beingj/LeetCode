@@ -166,7 +166,8 @@ namespace LeetCode
             // MinStack.Test.Run();
             // IntersectionOfTwoLinkedLists.Test.Run();
             // MaximumGap.Test.Run();
-            CompareVersionNumbers.Test.Run();
+            // CompareVersionNumbers.Test.Run();
+            FractionToRecurringDecimal.Test.Run();
         }
     }
 }
