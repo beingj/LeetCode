@@ -167,7 +167,9 @@ namespace LeetCode
             // IntersectionOfTwoLinkedLists.Test.Run();
             // MaximumGap.Test.Run();
             // CompareVersionNumbers.Test.Run();
-            FractionToRecurringDecimal.Test.Run();
+            // FractionToRecurringDecimal.Test.Run();
+            // TwoSumIIInputArrayIsSorted.Test.Run();
+            ExcelSheetColumnTitle.Test.Run();
         }
     }
 }
