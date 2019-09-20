@@ -169,7 +169,9 @@ namespace LeetCode
             // CompareVersionNumbers.Test.Run();
             // FractionToRecurringDecimal.Test.Run();
             // TwoSumIIInputArrayIsSorted.Test.Run();
-            ExcelSheetColumnTitle.Test.Run();
+            // ExcelSheetColumnTitle.Test.Run();
+            // MajorityElement.Test.Run();
+            ExcelSheetColumnNumber.Test.Run();
         }
     }
 }
