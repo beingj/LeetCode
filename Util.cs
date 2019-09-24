@@ -1374,6 +1374,41 @@ namespace Util
             res.AddRange(lst);
             return res;
         }
+        public static List<string> UnpackPara1(this string s)
+        {
+            if (s.Trim() == "[]")
+            {
+                return new List<string>();
+            }
+            s = s.TrimStart().TrimEnd();
+            return s.Substring(2, s.Length - 4)
+                    .Split("],[")
+                    .Select(x => string.Format("[{0}]", x))
+                    .ToList();
+        }
+        public static List<string> UnpackPara2(this string s)
+        {
+            if (s.Trim() == "[]")
+            {
+                return new List<string>();
+            }
+            s = s.TrimStart().TrimEnd();
+            s = s.Substring(1, s.Length - 2);
+            if (s.StartsWith('['))
+            {
+                var s2 = new string(s.Reverse().ToArray());
+                var start = 0;
+                var lst = new List<string>();
+                while (start < s.Length)
+                {
+                    var end = s.Length - 1 - s2.IndexOf(']');
+                    lst.Add(s.Substring(start, end - start + 1));
+                    start = end + 1;
+                }
+                return lst;
+            }
+            return s.Split(",").ToList();
+        }
         public static IList<int> Sorted(this IList<int> a)
         {
             return a.OrderBy(j => j).ToList();
@@ -1873,23 +1908,37 @@ namespace Util
             for (var i = 0; i < lines.Length; i += 3)
             {
                 var op = lines[i].JsonToIListStr();
-                var para = lines[i + 1].JsonToIListIListInt();
-                var exp = lines[i + 2].JsonToIListNullableInt();
+                var para = lines[i + 1].UnpackPara1();
+                var exp = lines[i + 2].UnpackPara2();
                 dynamic obj = null;
                 for (var idx = 0; idx < para.Count; idx++)
                 {
                     if (op[idx] == t.Name)
                     {
-                        obj = Activator.CreateInstance(t, args: para[idx].Select(i => (object)i).ToArray(), activationAttributes: null);
-                        Console.WriteLine($"new {t.Name}({string.Join(", ", para[idx])})");
+                        var argStrs = para[idx].UnpackPara2();
+                        var ctor = t.GetConstructors().Where(i => i.GetParameters().Length == argStrs.Count).First();
+                        var inputTypes = ctor.GetParameters().Select(i => i.ParameterType).ToList();
+                        var inputParser = new InputConverterList(inputTypes);
+                        var vs = new List<dynamic>();
+                        for (var j = 0; j < inputParser.Count; j++)
+                        {
+                            vs.Add(inputParser[j].converter(argStrs[j]));
+                        }
+                        // obj = Activator.CreateInstance(t, args: vs.ToArray(), activationAttributes: null);
+                        obj = ctor.Invoke(vs.ToArray());
+                        Console.WriteLine($"new {t.Name}({para[idx]})");
                     }
                     else
                     {
                         var m = t.GetMethod(op[idx].ToCap());
-                        var x = para[idx].Select(i => i.ToString()).ToList();
-                        if (exp[idx] != null)
+                        var x = new List<string>();
+                        if (para[idx] != "[null]")
                         {
-                            x.Add(exp[idx].ToString());
+                            x = para[idx].UnpackPara2();
+                        }
+                        if (exp[idx] != "null")
+                        {
+                            x.Add(exp[idx]);
                         }
                         Method2(obj, m, x.ToArray(), sortRet);
                     }

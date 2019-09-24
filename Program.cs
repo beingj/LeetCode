@@ -171,7 +171,9 @@ namespace LeetCode
             // TwoSumIIInputArrayIsSorted.Test.Run();
             // ExcelSheetColumnTitle.Test.Run();
             // MajorityElement.Test.Run();
-            ExcelSheetColumnNumber.Test.Run();
+            // ExcelSheetColumnNumber.Test.Run();
+            // FactorialTrailingZeroes.Test.Run();
+            BinarySearchTreeIterator.Test.Run();
         }
     }
 }
