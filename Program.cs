@@ -173,7 +173,8 @@ namespace LeetCode
             // MajorityElement.Test.Run();
             // ExcelSheetColumnNumber.Test.Run();
             // FactorialTrailingZeroes.Test.Run();
-            BinarySearchTreeIterator.Test.Run();
+            // BinarySearchTreeIterator.Test.Run();
+            DungeonGame.Test.Run();
         }
     }
 }
