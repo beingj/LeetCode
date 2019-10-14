@@ -174,7 +174,8 @@ namespace LeetCode
             // ExcelSheetColumnNumber.Test.Run();
             // FactorialTrailingZeroes.Test.Run();
             // BinarySearchTreeIterator.Test.Run();
-            DungeonGame.Test.Run();
+            // DungeonGame.Test.Run();
+            LargestNumber.Test.Run();
         }
     }
 }
