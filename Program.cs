@@ -175,7 +175,8 @@ namespace LeetCode
             // FactorialTrailingZeroes.Test.Run();
             // BinarySearchTreeIterator.Test.Run();
             // DungeonGame.Test.Run();
-            LargestNumber.Test.Run();
+            // LargestNumber.Test.Run();
+            RepeatedDnaSequences.Test.Run();
         }
     }
 }
